@@ -11,7 +11,7 @@
 |---|---|
 | **Name** | Asoh Yannick Anoh |
 | **Role** | .NET Backend Developer |
-| **Stack** | .NET 10 · C# · ASP.NET Core 10 · SQL Server · Docker · Aspire |
+| **Stack** | .NET 10 · C# · ASP.NET Core 10 · PostgreSQL · Docker · Aspire |
 | **Architecture** | Minimal Clean Architecture · Vertical Slice Architecture (VSA) |
 
 ---
