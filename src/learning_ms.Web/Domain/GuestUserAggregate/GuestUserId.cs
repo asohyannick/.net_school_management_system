@@ -1,0 +1,10 @@
+using Vogen;
+
+namespace learning_ms.Web.Domain.GuestUserAggregate;
+
+[ValueObject<Guid>]
+public readonly partial struct GuestUserId
+{
+  private static Validation Validate(Guid value)
+      => value != Guid.Empty ? Validation.Ok : Validation.Invalid("GuestUserId cannot be empty.");
+}

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<NsDepCopConfig>
+    <Allowed From="*" To="*" />
+
+    <Disallowed From="learning_ms.Web.Domain.*"
+				To="learning_ms.Web.Infrastructure.*" />
+    
+    <Disallowed From="learning_ms.Web.CartFeatures.*"
+				To="learning_ms.Web.Infrastructure.*" />
+    
+    <Disallowed From="learning_ms.Web.ProductFeatures.*"
+				To="learning_ms.Web.Infrastructure.*" />
+    
+    <Disallowed From="learning_ms.Web.Domain.OrderAggregate.*"
+				To="learning_ms.Web.Domain.CartAggregate.*" />
+
+    <AnalyzerConfig>
+        <IssueKind Name="IllegalDependency" Severity="Error" />
+    </AnalyzerConfig>
+</NsDepCopConfig>
