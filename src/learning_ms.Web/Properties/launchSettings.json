@@ -1,13 +1,13 @@
 {
   "profiles": {
-    "https": {
+    "learning_ms.Web": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchUrl": "scalar",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:8000;http://localhost:8001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "https://localhost:57379/"
+      }
     }
   }
 }

@@ -13,8 +13,4 @@
   <Folder Name="/src/">
     <Project Path="src/learning_ms.Web/learning_ms.Web.csproj" />
   </Folder>
-  <Folder Name="/src/_aspire/">
-    <Project Path="src/learning_ms.AspireHost/learning_ms.AspireHost.csproj" />
-    <Project Path="src/learning_ms.ServiceDefaults/learning_ms.ServiceDefaults.csproj" />
-  </Folder>
 </Solution>
