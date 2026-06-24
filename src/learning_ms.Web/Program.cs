@@ -3,9 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
 using learning_ms.Web.Infrastructure.Persistence;
+using learning_ms.Web.Infrastructure.Email;
 using Microsoft.OpenApi.Models;
+using learning_ms.Web.Presentation.Middleware.MiddlewareExtensions;
+using learning_ms.Web.Infrastructure.RateLimiting.RateLimitingServiceCollectionExtensions;
+using learning_ms.Web.Infrastructure.Payments.PayPal.PayPalServiceCollectionExtensions;
+using learning_ms.Web.Presentation.Extensions.CorsServiceExtensions;
 
-// ─── Load .env before anything reads configuration ────────────────────────────
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,17 +22,15 @@ builder.Host.UseSerilog((ctx, config) =>
         .WriteTo.Console(
             outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"));
 
-// ─── Bind .env values into configuration ─────────────────────────────────────
 builder.Configuration.AddEnvironmentVariables();
 
-// ─── Controllers + Swagger ───────────────────────────────────────────────────
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
   c.SwaggerDoc("v1", new OpenApiInfo
   {
-    Title = "School Management System API Develop By Asoh Yannick, .NET Developer.",
+    Title = "School Management System API Built with ❤️ by Asoh Yannick· .NET Developer",
     Version = builder.Configuration["ApiSettings:Version"] ?? "v1",
     Description = "RESTful API for managing school operations — students, courses, enrollments, staff and more.",
     Contact = new OpenApiContact
@@ -64,7 +66,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ─── PostgreSQL + EF Core ─────────────────────────────────────────────────────
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -74,13 +75,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             errorCodesToAdd: null))
     .UseSnakeCaseNamingConvention());
 
-// ─── Application services (register here as you build) ───────────────────────
-// builder.Services.AddScoped<IRepository<Student>, EfRepository<Student>>();
-// builder.Services.AddMediator();
+builder.Services.AddCachingInfrastructure(builder.Configuration);
+
+builder.Services.AddEmailInfrastructure(builder.Configuration);
+
+builder.Services.AddStripeConfiguration(builder.Configuration);
+builder.Services.AddPayPalConfiguration(builder.Configuration);
+
+builder.Services.AddRateLimitingInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
-// ─── Verify PostgreSQL connection on startup ──────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
   var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -121,9 +126,12 @@ if (app.Environment.IsDevelopment())
   });
 }
 
+app.UseGlobalExceptionHandler();
 app.UseHttpsRedirection();
+app.UseCorsPolicy(builder.Configuration);  
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter(); 
 app.MapControllers();
 
 // ─── Startup banner — logs after everything is wired ─────────────────────────

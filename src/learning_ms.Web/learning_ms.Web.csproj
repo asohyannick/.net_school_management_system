@@ -23,6 +23,9 @@
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="DotNetEnv" />
     <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Hangfire.AspNetCore" />
+    <PackageReference Include="Hangfire.Core" />
+    <PackageReference Include="Hangfire.PostgreSql" />
 
     <PackageReference Include="Mediator.Abstractions" />
     <PackageReference Include="Mediator.SourceGenerator">
@@ -31,11 +34,19 @@
     </PackageReference>
 
     <PackageReference Include="MailKit" />
+
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
+
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
     <PackageReference Include="MimeKit" />
+    <PackageReference Include="Minio" />
     <PackageReference Include="NimblePros.Metronome" />
+    <PackageReference Include="PayPalServerSDK" />
+    <PackageReference Include="Resend" />
     <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
+    <PackageReference Include="Stripe.net" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
 
     <PackageReference Include="Vogen">
