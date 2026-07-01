@@ -9,6 +9,8 @@
     <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
+    <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
     <PackageVersion Include="Azure.Identity" Version="1.17.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="DotNetEnv" Version="3.1.1" />
@@ -42,6 +44,7 @@
     <PackageVersion Include="Resend" Version="0.5.1" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.10.3" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="SQLite" Version="3.13.0" />

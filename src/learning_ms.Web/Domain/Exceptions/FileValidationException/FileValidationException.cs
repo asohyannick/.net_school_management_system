@@ -2,5 +2,5 @@
 
 public sealed class FileValidationException : Exception
 {
-    public FileValidationException(string message) : base(message) { }
+  public FileValidationException(string message) : base(message) { }
 }

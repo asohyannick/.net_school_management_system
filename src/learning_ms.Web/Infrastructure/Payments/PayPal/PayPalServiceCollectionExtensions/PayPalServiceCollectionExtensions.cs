@@ -2,54 +2,61 @@
 
 public static class PayPalServiceCollectionExtensions
 {
-    public const string PayPalHttpClientName = "PayPal";
+  public const string PayPalHttpClientName = "PayPal";
 
-    private const string SandboxBaseUrl = "https://api-m.sandbox.paypal.com";
-    private const string LiveBaseUrl = "https://api-m.paypal.com";
+  private const string SandboxBaseUrl = "https://api-m.sandbox.paypal.com";
+  private const string LiveBaseUrl = "https://api-m.paypal.com";
 
-    public static IServiceCollection AddPayPalConfiguration(
-        this IServiceCollection services,
-        IConfiguration configuration)
+  public static IServiceCollection AddPayPalConfiguration(
+    this IServiceCollection services,
+    IConfiguration configuration
+  )
+  {
+    var section = configuration.GetSection(PayPalSettings.SectionName);
+    var settings = new PayPalSettings
     {
-        var section = configuration.GetSection(PayPalSettings.SectionName);
-        var settings = new PayPalSettings
-        {
-            ClientId = section[nameof(PayPalSettings.ClientId)] ?? string.Empty,
-            SecretKey = section[nameof(PayPalSettings.SecretKey)] ?? string.Empty,
-            Environment = NormalizeEnvironment(section[nameof(PayPalSettings.Environment)])
-        };
+      ClientId = section[nameof(PayPalSettings.ClientId)] ?? string.Empty,
+      SecretKey = section[nameof(PayPalSettings.SecretKey)] ?? string.Empty,
+      Environment = NormalizeEnvironment(section[nameof(PayPalSettings.Environment)]),
+    };
 
-        services.AddSingleton(settings);
+    services.Configure<PayPalSettings>(configuration.GetSection(PayPalSettings.SectionName));
 
-        var baseUrl = settings.Environment == "live" ? LiveBaseUrl : SandboxBaseUrl;
+    services.AddSingleton(sp =>
+      sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PayPalSettings>>().Value
+    );
 
-        services.AddHttpClient(PayPalHttpClientName, client =>
-        {
-            client.BaseAddress = new Uri(baseUrl);
-        });
+    var baseUrl = settings.Environment == "live" ? LiveBaseUrl : SandboxBaseUrl;
 
-        if (LooksLikeUnresolvedPlaceholder(settings.ClientId) || LooksLikeUnresolvedPlaceholder(settings.SecretKey))
-        {
-            using var loggerFactory = LoggerFactory.Create(b => b.AddConsole());
-            loggerFactory.CreateLogger("PayPalServiceCollectionExtensions").LogWarning(
-                "PayPalSettings:ClientId or SecretKey still contains an unresolved \"${{VAR}}\" " +
-                "placeholder. Set PAYPAL_API_CLIENT / PAYPAL_SECRET_KEY before adding real PayPal calls.");
-        }
+    services.AddHttpClient(
+      PayPalHttpClientName,
+      client =>
+      {
+        client.BaseAddress = new Uri(baseUrl);
+      }
+    );
+    return services;
+  }
 
-        return services;
-    }
+  private static string NormalizeEnvironment(string? environment)
+  {
+    if (IsInvalid(environment))
+      return "sandbox";
 
-    private static string NormalizeEnvironment(string? raw)
+    var normalized = environment!.Trim().ToLowerInvariant();
+
+    return normalized switch
     {
-        if (string.IsNullOrWhiteSpace(raw) || LooksLikeUnresolvedPlaceholder(raw))
-        {
-            return "sandbox";
-        }
+      "live" => "live",
+      "sandbox" => "sandbox",
+      _ => "sandbox",
+    };
+  }
 
-        var normalized = raw.ToLowerInvariant();
-        return normalized == "live" ? "live" : "sandbox";
-    }
-
-    private static bool LooksLikeUnresolvedPlaceholder(string value) =>
-        value.StartsWith("${") && value.EndsWith('}');
+  private static bool IsInvalid(string? value)
+  {
+    return string.IsNullOrWhiteSpace(value)
+      || value.Contains("${", StringComparison.Ordinal)
+      || value.Equals("placeholder", StringComparison.OrdinalIgnoreCase);
+  }
 }

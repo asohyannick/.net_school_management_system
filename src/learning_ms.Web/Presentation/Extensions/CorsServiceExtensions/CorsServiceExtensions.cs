@@ -1,80 +1,84 @@
 ﻿using learning_ms.Web.Application.Common.Settings.CorsSettings;
+using learning_ms.Web.Application.Exceptions.NotFoundException;
+
 namespace learning_ms.Web.Presentation.Extensions.CorsServiceExtensions;
 
 public static class CorsServiceExtensions
 {
-    public static IServiceCollection AddCorsPolicies(
-        this IServiceCollection services,
-        IConfiguration configuration)
+  public static IServiceCollection AddCorsPolicies(
+    this IServiceCollection services,
+    IConfiguration configuration
+  )
+  {
+    var settings =
+      configuration.GetSection("CorsSettings").Get<CorsSettings>()
+      ?? throw new NotFoundException("CorsSettings section is missing from configuration.");
+
+    var rawOrigins = configuration["CorsSettings:AllowedOrigins"] ?? string.Empty;
+
+    if (!string.IsNullOrWhiteSpace(rawOrigins))
     {
-        var settings = configuration
-            .GetSection("CorsSettings")
-            .Get<CorsSettings>()
-            ?? throw new InvalidOperationException(
-                "CorsSettings section is missing from configuration.");
+      settings.AllowedOrigins = rawOrigins.Split(
+        ',',
+        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+      );
+    }
 
-        var rawOrigins = configuration["CorsSettings:AllowedOrigins"] ?? string.Empty;
+    if (settings.AllowedOrigins.Length == 0)
+      throw new InvalidOperationException(
+        "CorsSettings.AllowedOrigins is empty. "
+          + "Set the CORS_ALLOWED_ORIGINS environment variable."
+      );
 
-        if (!string.IsNullOrWhiteSpace(rawOrigins))
+    services.AddSingleton(settings);
+
+    services.AddCors(options =>
+    {
+      options.AddPolicy(
+        settings.PolicyName,
+        policy =>
         {
-            settings.AllowedOrigins = rawOrigins
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+          policy
+            .WithOrigins(settings.AllowedOrigins)
+            .WithMethods(settings.AllowedMethods)
+            .WithHeaders(settings.AllowedHeaders)
+            .WithExposedHeaders(settings.ExposedHeaders)
+            .SetPreflightMaxAge(TimeSpan.FromSeconds(settings.PreflightMaxAgeSeconds));
+
+          if (settings.AllowCredentials)
+            policy.AllowCredentials();
+          else
+            policy.DisallowCredentials();
         }
+      );
 
-        if (settings.AllowedOrigins.Length == 0)
-            throw new InvalidOperationException(
-                "CorsSettings.AllowedOrigins is empty. " +
-                "Set the CORS_ALLOWED_ORIGINS environment variable.");
-
-        services.AddSingleton(settings);
-
-        services.AddCors(options =>
+      options.AddPolicy(
+        "HealthCheckPolicy",
+        policy =>
         {
-            options.AddPolicy(settings.PolicyName, policy =>
-            {
-                policy
-                    .WithOrigins(settings.AllowedOrigins)
-                    .WithMethods(settings.AllowedMethods)
-                    .WithHeaders(settings.AllowedHeaders)
-                    .WithExposedHeaders(settings.ExposedHeaders)
-                    .SetPreflightMaxAge(TimeSpan.FromSeconds(settings.PreflightMaxAgeSeconds));
+          policy.WithOrigins(settings.AllowedOrigins).WithMethods("GET").DisallowCredentials();
+        }
+      );
+    });
 
-                if (settings.AllowCredentials)
-                    policy.AllowCredentials();
-                else
-                    policy.DisallowCredentials();
-            });
+    return services;
+  }
 
-            options.AddPolicy("HealthCheckPolicy", policy =>
-            {
-                policy
-                    .WithOrigins(settings.AllowedOrigins)
-                    .WithMethods("GET")
-                    .DisallowCredentials();
-            });
-        });
+  public static WebApplication UseCorsPolicy(this WebApplication app, IConfiguration configuration)
+  {
+    var settings = app.Services.GetRequiredService<CorsSettings>();
 
-        return services;
-    }
+    var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("CORS");
 
-    public static WebApplication UseCorsPolicy(
-        this WebApplication app,
-        IConfiguration configuration)
-    {
-        var settings = app.Services.GetRequiredService<CorsSettings>();
+    logger.LogInformation(
+      "CORS policy '{Policy}' active for {Count} origin(s): {Origins}",
+      settings.PolicyName,
+      settings.AllowedOrigins.Length,
+      string.Join(", ", settings.AllowedOrigins)
+    );
 
-        var logger = app.Services
-            .GetRequiredService<ILoggerFactory>()
-            .CreateLogger("CORS");
+    app.UseCors(settings.PolicyName);
 
-        logger.LogInformation(
-            "CORS policy '{Policy}' active for {Count} origin(s): {Origins}",
-            settings.PolicyName,
-            settings.AllowedOrigins.Length,
-            string.Join(", ", settings.AllowedOrigins));
-
-        app.UseCors(settings.PolicyName);
-
-        return app;
-    }
+    return app;
+  }
 }

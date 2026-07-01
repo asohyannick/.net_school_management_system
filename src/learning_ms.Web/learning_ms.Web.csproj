@@ -20,6 +20,8 @@
     <PackageReference Include="Ardalis.SmartEnum" />
     <PackageReference Include="Ardalis.Specification" />
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" />
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="DotNetEnv" />
     <PackageReference Include="EFCore.NamingConventions" />
@@ -45,6 +47,7 @@
     <PackageReference Include="Resend" />
     <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
     <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
     <PackageReference Include="Stripe.net" />
     <PackageReference Include="Swashbuckle.AspNetCore" />

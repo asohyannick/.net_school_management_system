@@ -1,4 +1,5 @@
-﻿using Domain.Exceptions;
+﻿
+using learning_ms.Web.Domain.Exceptions;
 namespace learning_ms.Web.Application.Exceptions.BadRequestException;
 
 public sealed class BadRequestException : DomainException
@@ -9,11 +10,11 @@ public sealed class BadRequestException : DomainException
   public IReadOnlyDictionary<string, string[]>? ValidationErrors { get; }
 
   public BadRequestException(string message)
-      : base(DefaultTitle, message, HttpStatusCode)
+    : base(DefaultTitle, message, HttpStatusCode)
   {
   }
   public BadRequestException(string message, IDictionary<string, string[]> validationErrors)
-      : base(DefaultTitle, message, HttpStatusCode)
+    : base(DefaultTitle, message, HttpStatusCode)
   {
     ValidationErrors = validationErrors.AsReadOnly();
   }
