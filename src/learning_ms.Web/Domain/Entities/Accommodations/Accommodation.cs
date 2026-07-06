@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using learning_ms.Web.Domain.Entities.StudentAccommodations;
-
+﻿using learning_ms.Web.Domain.Entities.StudentAccommodations;
 namespace learning_ms.Web.Domain.Entities.Accommodations;
 
 public class Accommodation

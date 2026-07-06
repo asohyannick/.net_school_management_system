@@ -11,7 +11,6 @@ internal sealed class MinioFileStorageService : IFileStorageService
   private readonly MinioSettings _minioSettings;
   private readonly FileValidator _fileValidator;
   private readonly ILogger<MinioFileStorageService> _logger;
-
   public MinioFileStorageService(
       IMinioClient minioClient,
       MinioSettings minioSettings,

@@ -1,9 +1,6 @@
-﻿using System;
-using learning_ms.Web.Domain.Enums.AccommodationStatus;
+﻿using learning_ms.Web.Domain.Enums.AccommodationStatus;
 using learning_ms.Web.Domain.Entities.Accommodations;
-
 namespace learning_ms.Web.Domain.Entities.StudentAccommodations;
-
 public class StudentAccommodation
 {
   public Guid Id { get; set; }

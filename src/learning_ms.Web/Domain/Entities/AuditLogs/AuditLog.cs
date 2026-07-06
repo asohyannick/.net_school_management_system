@@ -1,5 +1,4 @@
 ﻿using learning_ms.Web.Domain.Enums.AuditSeverities;
-
 namespace learning_ms.Web.Domain.Entities.AuditLogs;
 
 public class AuditLog

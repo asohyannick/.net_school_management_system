@@ -1,7 +1,5 @@
 ﻿using learning_ms.Web.Domain.Enums.GenderType;
-
 namespace learning_ms.Web.Domain.Entities.StudentProfile;
-
 public class StudentProfile
 {
   public Guid Id { get; set; }

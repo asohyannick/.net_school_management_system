@@ -1,9 +1,6 @@
 ﻿using learning_ms.Web.Application.Interface.IEmailService;
-using Microsoft.Extensions.Logging;
 using Resend;
-
 namespace learning_ms.Web.Infrastructure.Email;
-
 public sealed class ResendEmailService : IEmailService
 {
   private readonly IResend _resend;

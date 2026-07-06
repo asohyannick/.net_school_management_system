@@ -1,7 +1,5 @@
 ﻿using learning_ms.Web.Domain.Exceptions;
-
 namespace learning_ms.Web.Application.Exceptions.UnAuthorizedException;
-
 public sealed class UnAuthorizedException : DomainException
 {
   private const int HttpStatusCode = 401;

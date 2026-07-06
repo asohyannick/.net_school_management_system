@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using Microsoft.Extensions.Caching.Hybrid;
+﻿using Microsoft.Extensions.Caching.Hybrid;
 using learning_ms.Web.Application.Interface.ICacheService;
 using learning_ms.Web.Infrastructure.Caching.CacheSettings;
-
 public sealed class HybridCacheService : ICacheService
 {
     private readonly HybridCache _cache;

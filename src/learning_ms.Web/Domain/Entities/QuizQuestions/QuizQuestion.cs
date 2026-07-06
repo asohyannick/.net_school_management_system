@@ -1,9 +1,7 @@
 ﻿using learning_ms.Web.Domain.Entities.QuizOptions;
 using learning_ms.Web.Domain.Entities.Quizzes;
 using learning_ms.Web.Domain.Enums.QuestionTypes;
-
 namespace learning_ms.Web.Domain.Entities.QuizQuestions;
-
 public class QuizQuestion
 {
   public Guid Id { get; set; }

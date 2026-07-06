@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Application.Common.Settings.MinioSettings;
-
 public class MinioSettings
 {
   public string Endpoint { get; set; } = string.Empty;

@@ -1,8 +1,6 @@
 ﻿using learning_ms.Web.Domain.Entities.BookLoans;
 using learning_ms.Web.Domain.Entities.Libraries;
-
 namespace learning_ms.Web.Domain.Entities.Books;
-
 public class Book
 {
   public Guid Id { get; set; }

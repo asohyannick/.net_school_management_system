@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Domain.Entities.Review;
-
 public class Review
 {
   public Guid Id { get; set; }

@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Domain.Entities.TimeTable;
-
 public class TimeTable
 {
   public Guid Id { get; set; }

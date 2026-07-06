@@ -1,7 +1,5 @@
-﻿
-using learning_ms.Web.Domain.Exceptions;
+﻿using learning_ms.Web.Domain.Exceptions;
 namespace learning_ms.Web.Application.Exceptions.BadRequestException;
-
 public sealed class BadRequestException : DomainException
 {
   private const int HttpStatusCode = 400;

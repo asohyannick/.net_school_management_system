@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Application.Common.Settings.CorsSettings;
-
 public class CorsSettings
 {
   public string PolicyName { get; set; } = "DefaultCorsPolicy";

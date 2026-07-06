@@ -1,7 +1,6 @@
 ﻿using learning_ms.Web.Application.Interface.IEmailService;
 using Resend;
 namespace learning_ms.Web.Infrastructure.Email;
-
 public static class EmailServiceCollectionExtensions
 {
    public static IServiceCollection AddEmailInfrastructure(

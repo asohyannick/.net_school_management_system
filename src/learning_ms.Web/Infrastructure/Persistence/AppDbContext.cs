@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
 namespace learning_ms.Web.Infrastructure.Persistence;
-
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

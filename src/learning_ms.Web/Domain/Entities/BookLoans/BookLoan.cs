@@ -1,9 +1,7 @@
 ﻿using learning_ms.Web.Domain.Entities.Books;
 using learning_ms.Web.Domain.Entities.Libraries;
 using learning_ms.Web.Domain.Enums.BookLoanStatus;
-
 namespace learning_ms.Web.Domain.Entities.BookLoans;
-
 public class BookLoan
 {
   public Guid Id { get; set; }

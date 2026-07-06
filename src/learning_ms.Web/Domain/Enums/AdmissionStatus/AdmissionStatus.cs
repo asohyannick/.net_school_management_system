@@ -1,6 +1,4 @@
-﻿
-namespace learning_ms.Web.Domain.Enums.AdmissionStatus;
-
+﻿namespace learning_ms.Web.Domain.Enums.AdmissionStatus;
 public enum AdmissionStatus
 {
   Pending,

@@ -2,6 +2,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DotNetEnv;
+using FluentValidation;
+using learning_ms.Web.Application.Mappings.AdmissionMapper;
+using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
 using learning_ms.Web.Infrastructure.Email;
@@ -104,7 +107,9 @@ try
         {
           new OpenApiSecurityScheme
           {
-            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+            Reference = new OpenApiReference { 
+              Type = ReferenceType.SecurityScheme, Id = "Bearer" 
+            },
           },
           Array.Empty<string>()
         },
@@ -125,7 +130,7 @@ try
           )
       )
       .UseSnakeCaseNamingConvention()
-      .EnableSensitiveDataLogging(builder.Environment.IsDevelopment()) // safe: dev only
+      .EnableSensitiveDataLogging(builder.Environment.IsDevelopment()) 
       .EnableDetailedErrors(builder.Environment.IsDevelopment())
   );
 
@@ -177,6 +182,10 @@ try
   builder.Services.AddCorsPolicies(builder.Configuration);
   builder.Services.AddMinioStorage(builder.Configuration);
   builder.Services.AddHangfireBackgroundJobs(builder.Configuration);
+
+  // ─── Application services (Mapping + Validation) ─────────────────────────
+  builder.Services.AddValidatorsFromAssemblyContaining<CreateAdmissionRequestDtoValidator>();
+  builder.Services.AddScoped<AdmissionMapper>();
 
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
@@ -294,5 +303,3 @@ finally
 {
   await Log.CloseAndFlushAsync();
 }
-
-public partial class Program;

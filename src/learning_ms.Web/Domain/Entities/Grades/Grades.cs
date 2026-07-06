@@ -1,6 +1,5 @@
 ﻿using learning_ms.Web.Domain.Enums.GradeStatus;
 namespace learning_ms.Web.Domain.Entities.Grades;
-
 public class Grade
 {
   public Guid Id { get; set; }

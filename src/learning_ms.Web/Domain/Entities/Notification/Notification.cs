@@ -1,9 +1,7 @@
 ﻿using learning_ms.Web.Domain.Enums.NotificationPriority;
 using learning_ms.Web.Domain.Enums.NotificationStatus;
 using learning_ms.Web.Domain.Enums.NotificationType;
-
 namespace learning_ms.Web.Domain.Entities.Notification;
-
 public class Notification
 {
   public Guid Id { get; set; }

@@ -1,7 +1,5 @@
 ﻿using learning_ms.Web.Domain.Exceptions;
-
 namespace learning_ms.Web.Application.Exceptions.InternalServerError;
-
 public sealed class InternalServerErrorException : DomainException
 {
   private const int HttpStatusCode = 500;

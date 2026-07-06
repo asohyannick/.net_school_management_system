@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Domain.Entities.AiChatBot;
-
 public class AiChatBot
 {
   public Guid Id { get; set; }

@@ -1,5 +1,4 @@
-﻿
-namespace learning_ms.Web.Domain.Enums.ExamType;
+﻿namespace learning_ms.Web.Domain.Enums.ExamType;
 public enum ExamType
 {
   Quiz,

@@ -1,7 +1,5 @@
 ﻿using learning_ms.Web.Domain.Enums.UserRole;
-
 namespace learning_ms.Web.Domain.Entities.User;
-
 public class User
 {
   public Guid Id { get; set; }

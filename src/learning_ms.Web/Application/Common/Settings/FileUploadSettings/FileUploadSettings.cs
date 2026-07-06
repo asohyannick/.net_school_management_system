@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Application.Common.Settings.FileUploadSettings;
-
 public class FileUploadSettings
 {
   public long MaxFileSizeBytes { get; set; } = 52_428_800; // 50MB

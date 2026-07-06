@@ -4,9 +4,7 @@ using learning_ms.Web.Application.Exceptions.NotFoundException;
 using learning_ms.Web.Application.Interface.IFileProcessingService;
 using learning_ms.Web.Application.Interface.IFileUploadJob;
 using learning_ms.Web.Infrastructure.FileStorage.TempFileCleanupJob;
-
 namespace learning_ms.Web.Infrastructure.BackgroundJobs;
-
 public static class HangfireServiceExtensions
 {
   private static bool IsInvalidConnectionString(string? connectionString)

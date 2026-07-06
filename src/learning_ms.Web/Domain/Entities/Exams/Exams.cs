@@ -1,6 +1,5 @@
 ﻿using learning_ms.Web.Domain.Enums.ExamModes;
 using learning_ms.Web.Domain.Enums.ExamType;
-
 namespace learning_ms.Web.Domain.Entities.Exams;
 
 public class Exam

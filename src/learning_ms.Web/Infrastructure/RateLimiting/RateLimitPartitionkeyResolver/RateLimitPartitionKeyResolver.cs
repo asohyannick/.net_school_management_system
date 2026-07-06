@@ -1,7 +1,5 @@
 ﻿using System.Security.Claims;
-
 namespace learning_ms.Web.Infrastructure.RateLimiting;
-
 public static class RateLimitPartitionKeyResolver
 {
   private static readonly string[] UserIdClaimTypes =

@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using System.Threading.RateLimiting;
 namespace learning_ms.Web.Infrastructure.RateLimiting.RateLimitingServiceCollectionExtensions;
-
 public static class RateLimitingServiceCollectionExtensions
 {
   public static IServiceCollection AddRateLimitingInfrastructure(

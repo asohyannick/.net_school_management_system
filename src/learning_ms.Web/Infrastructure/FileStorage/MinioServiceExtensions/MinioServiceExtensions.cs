@@ -3,9 +3,7 @@ using learning_ms.Web.Application.Common.Settings.MinioSettings;
 using learning_ms.Web.Application.Exceptions.NotFoundException;
 using learning_ms.Web.Application.Interface.IFileStorageService;
 using Minio;
-
 namespace learning_ms.Web.Infrastructure.FileStorage.MinioServiceExtensions;
-
 public static class MinioServiceExtensions
 {
   public static IServiceCollection AddMinioStorage(

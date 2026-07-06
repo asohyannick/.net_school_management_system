@@ -1,6 +1,4 @@
-﻿
-namespace learning_ms.Web.Domain.Entities.DiscussionForums;
-
+﻿namespace learning_ms.Web.Domain.Entities.DiscussionForums;
 public class DiscussionForum
 {
   public Guid Id { get; set; }

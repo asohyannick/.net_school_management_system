@@ -1,8 +1,6 @@
 ﻿using learning_ms.Web.Domain.Entities.Quizzes;
 using learning_ms.Web.Domain.Enums.QuizAttemptStatus;
-
 namespace learning_ms.Web.Domain.Entities.QuizAttempts;
-
 public class QuizAttempt
 {
   public Guid Id { get; set; }

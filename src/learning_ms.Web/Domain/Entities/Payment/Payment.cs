@@ -3,9 +3,7 @@ using learning_ms.Web.Domain.Enums.PaymentMethods;
 using learning_ms.Web.Domain.Enums.PaymentProvider;
 using learning_ms.Web.Domain.Enums.PaymentStatus;
 using learning_ms.Web.Domain.Enums.PaymentType;
-
 namespace learning_ms.Web.Domain.Entities.Payment;
-
 public class Payment
 {
   public Guid Id { get; set; }

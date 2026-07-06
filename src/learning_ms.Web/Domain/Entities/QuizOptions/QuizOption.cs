@@ -1,6 +1,5 @@
 ﻿using learning_ms.Web.Domain.Entities.QuizQuestions;
 namespace learning_ms.Web.Domain.Entities.QuizOptions;
-
 public class QuizOption
 {
   public Guid Id { get; set; }

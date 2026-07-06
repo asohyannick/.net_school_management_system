@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Infrastructure.Caching.CacheSettings;
-
 public sealed class CacheSettings
 {
   public const string SectionName = "CacheSettings";

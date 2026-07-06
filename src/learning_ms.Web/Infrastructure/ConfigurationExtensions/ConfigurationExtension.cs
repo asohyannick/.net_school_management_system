@@ -1,7 +1,5 @@
 ﻿namespace learning_ms.Web.Infrastructure.ConfigurationExtensions;
-
 using System.Text.RegularExpressions;
-
 public static class ConfigurationExtensions
 {
   private static readonly Regex PlaceholderRegex = new(

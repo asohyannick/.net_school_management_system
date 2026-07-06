@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using learning_ms.Web.Domain.Entities.Books;
+﻿using learning_ms.Web.Domain.Entities.Books;
 using learning_ms.Web.Domain.Entities.BookLoans;
-
 namespace learning_ms.Web.Domain.Entities.Libraries;
-
 public class Library
 {
   public Guid Id { get; set; }

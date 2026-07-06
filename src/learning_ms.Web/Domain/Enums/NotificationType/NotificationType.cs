@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Domain.Enums.NotificationType;
-
 public enum NotificationType
 {
   SMS,

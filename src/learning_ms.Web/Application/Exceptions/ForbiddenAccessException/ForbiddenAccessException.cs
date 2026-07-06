@@ -1,5 +1,4 @@
-﻿
-using learning_ms.Web.Domain.Exceptions;
+﻿using learning_ms.Web.Domain.Exceptions;
 namespace learning_ms.Web.Application.Exceptions.ForbiddenAccessException;
 public sealed class ForbiddenAccessException : DomainException
 {

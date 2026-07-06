@@ -1,5 +1,4 @@
 ﻿namespace learning_ms.Web.Infrastructure.Payments.PayPal.PayPalServiceCollectionExtensions;
-
 public static class PayPalServiceCollectionExtensions
 {
   public const string PayPalHttpClientName = "PayPal";

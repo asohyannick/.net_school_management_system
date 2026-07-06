@@ -1,6 +1,5 @@
 ﻿using learning_ms.Web.Application.Common.DTOs.FileUploadResult;
 namespace learning_ms.Web.Application.Interface.IFileStorageService;
-
 public interface IFileStorageService
 {
   Task<FileUploadResult> UploadAsync(

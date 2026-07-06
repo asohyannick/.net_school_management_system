@@ -1,9 +1,7 @@
 ﻿using learning_ms.Web.Domain.Enums.AnnouncementAudiences;
 using learning_ms.Web.Domain.Enums.AnnouncementPriorities;
 using learning_ms.Web.Domain.Enums.AnnouncementTypes;
-
 namespace learning_ms.Web.Domain.Entities.Announcements;
-
 public class Announcement
 {
   public Guid Id { get; set; }
