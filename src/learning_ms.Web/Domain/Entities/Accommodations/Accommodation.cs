@@ -4,6 +4,8 @@ namespace learning_ms.Web.Domain.Entities.Accommodations;
 public class Accommodation
 {
   public Guid Id { get; set; }
+  
+  public List<string> HostelImage { get; set; } = [];
 
   public string Name { get; set; } = string.Empty;
 

@@ -3,7 +3,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DotNetEnv;
 using FluentValidation;
+using learning_ms.Web.Application.Mappings.AccommodationMapper;
 using learning_ms.Web.Application.Mappings.AdmissionMapper;
+using learning_ms.Web.Application.Validators.Accommodation;
 using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
@@ -186,6 +188,7 @@ try
   // ─── Application services (Mapping + Validation) ─────────────────────────
   builder.Services.AddValidatorsFromAssemblyContaining<CreateAdmissionRequestDtoValidator>();
   builder.Services.AddScoped<AdmissionMapper>();
+  builder.Services.AddScoped<AccommodationMapper>();
 
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
