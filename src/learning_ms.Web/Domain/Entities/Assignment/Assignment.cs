@@ -1,7 +1,6 @@
 ﻿using learning_ms.Web.Domain.Entities.Courses;
 using learning_ms.Web.Domain.Entities.TutorProfiles;
 namespace learning_ms.Web.Domain.Entities.Assignment;
-
 public class Assignment
 {
   public Guid Id { get; set; }
