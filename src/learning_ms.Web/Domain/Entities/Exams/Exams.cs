@@ -6,6 +6,8 @@ public class Exam
 {
   public Guid Id { get; set; }
 
+  public List<string> ExamDocuments { get; set; } = [];
+
   public string Title { get; set; } = default!;
 
   public string Description { get; set; } = string.Empty;
