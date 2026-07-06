@@ -10,6 +10,7 @@ using learning_ms.Web.Application.Mappings.AnnouncementMapper;
 using learning_ms.Web.Application.Mappings.AssignmentMapper;
 using learning_ms.Web.Application.Mappings.AttendanceMapper;
 using learning_ms.Web.Application.Mappings.BookLoanMapper;
+using learning_ms.Web.Application.Mappings.BookMapper;
 using learning_ms.Web.Application.Mappings.CourseMapper;
 using learning_ms.Web.Application.Mappings.DiscussionForumMapper;
 using learning_ms.Web.Application.Mappings.ExamMapper;
@@ -210,7 +211,7 @@ try
   builder.Services.AddScoped<GradeMapper>();
   builder.Services.AddScoped<HumanResourceMapper>();
   builder.Services.AddScoped<LibraryMapper>();
-
+  builder.Services.AddScoped<BookMapper>();
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
 
