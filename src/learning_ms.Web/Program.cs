@@ -9,6 +9,7 @@ using learning_ms.Web.Application.Mappings.AiChatBotMapper;
 using learning_ms.Web.Application.Mappings.AnnouncementMapper;
 using learning_ms.Web.Application.Mappings.AssignmentMapper;
 using learning_ms.Web.Application.Mappings.AttendanceMapper;
+using learning_ms.Web.Application.Mappings.BookLoanMapper;
 using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
@@ -196,6 +197,7 @@ try
   builder.Services.AddScoped<AnnouncementMapper>();
   builder.Services.AddScoped<AssignmentMapper>();
   builder.Services.AddScoped<AttendanceMapper>();
+  builder.Services.AddScoped<BookLoanMapper>();
 
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
