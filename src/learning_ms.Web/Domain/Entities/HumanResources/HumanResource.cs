@@ -16,7 +16,7 @@ public class HumanResource
 
   public string PhoneNumber { get; set; } = default!;
 
-  public string? ProfilePictureUrl { get; set; }
+  public List<string>? ProfilePictureUrl { get; set; } = [];
 
   public string Biography { get; set; } = string.Empty;
 
@@ -57,6 +57,8 @@ public class HumanResource
   public List<string> Certifications { get; set; } = new();
 
   public List<string> Skills { get; set; } = new();
+
+  public List<string> UploadCertifications { get; set; } = [];
 
   public int YearsOfExperience { get; set; }
 
