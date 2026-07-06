@@ -15,6 +15,8 @@ public class Library
 
   public string LibrarianName { get; set; } = string.Empty;
 
+  public List<string> LibraryImage { get; set; } = [];
+
   public string Email { get; set; } = string.Empty;
 
   public string PhoneNumber { get; set; } = string.Empty;
