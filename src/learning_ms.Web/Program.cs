@@ -214,6 +214,7 @@ try
   builder.Services.AddScoped<LibraryMapper>();
   builder.Services.AddScoped<BookMapper>();
   builder.Services.AddScoped<QuizAttemptMapper>();
+  builder.Services.AddScoped<QuizQuestionMapper>();
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
 
