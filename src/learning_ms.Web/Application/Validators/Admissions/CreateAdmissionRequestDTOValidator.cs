@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using learning_ms.Web.Application.Common.DTOs.Admissions.CreateAdmissionRequestDTO;
-
 namespace learning_ms.Web.Application.Validators.Admissions;
-
 public class CreateAdmissionRequestDtoValidator : AbstractValidator<CreateAdmissionRequestDto>
 {
   private static readonly string[] AllowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
