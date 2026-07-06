@@ -17,6 +17,7 @@ using learning_ms.Web.Application.Mappings.ExamMapper;
 using learning_ms.Web.Application.Mappings.GradeMapper;
 using learning_ms.Web.Application.Mappings.HumanResourceMapper;
 using learning_ms.Web.Application.Mappings.LibraryMapper;
+using learning_ms.Web.Application.Mappings.QuizAttemptMapper;
 using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
@@ -212,6 +213,7 @@ try
   builder.Services.AddScoped<HumanResourceMapper>();
   builder.Services.AddScoped<LibraryMapper>();
   builder.Services.AddScoped<BookMapper>();
+  builder.Services.AddScoped<QuizAttemptMapper>();
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
 
