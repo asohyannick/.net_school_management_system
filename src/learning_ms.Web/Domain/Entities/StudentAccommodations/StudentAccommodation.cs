@@ -16,11 +16,8 @@ public class StudentAccommodation
   public DateTime? CheckOutDate { get; set; }
 
   public DateTime? ExpectedCheckOutDate { get; set; }
-
-  public decimal AccommodationFee { get; set; }
-
+  public decimal AccommodationFee { get; set; } 
   public decimal AmountPaid { get; set; }
-
   public decimal Balance => AccommodationFee - AmountPaid;
 
   public AccommodationStatus Status { get; set; } = AccommodationStatus.Active;
