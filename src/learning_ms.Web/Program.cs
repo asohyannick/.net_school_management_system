@@ -6,6 +6,7 @@ using FluentValidation;
 using learning_ms.Web.Application.Mappings.AccommodationMapper;
 using learning_ms.Web.Application.Mappings.AdmissionMapper;
 using learning_ms.Web.Application.Mappings.AiChatBotMapper;
+using learning_ms.Web.Application.Mappings.AnnouncementMapper;
 using learning_ms.Web.Application.Validators.Accommodation;
 using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
@@ -191,6 +192,7 @@ try
   builder.Services.AddScoped<AdmissionMapper>();
   builder.Services.AddScoped<AccommodationMapper>();
   builder.Services.AddScoped<AiChatBotMapper>();
+  builder.Services.AddScoped<AnnouncementMapper>();
 
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
