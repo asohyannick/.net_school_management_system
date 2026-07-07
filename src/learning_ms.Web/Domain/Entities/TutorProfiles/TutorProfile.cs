@@ -10,7 +10,7 @@ public class TutorProfile
   public string MiddleName { get; set; } = string.Empty;
   public string LastName { get; set; } = default!;
 
-  public required string ProfilePictureUrl { get; set; }
+  public required List<string> ProfilePictureUrl { get; set; } = [];
 
   public GenderType Gender { get; set; } = default!;
 

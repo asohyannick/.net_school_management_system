@@ -23,6 +23,7 @@ using learning_ms.Web.Application.Mappings.QuizOptionMapper;
 using learning_ms.Web.Application.Mappings.StudentAccommodationMapper;
 using learning_ms.Web.Application.Mappings.StudentProfileMapper;
 using learning_ms.Web.Application.Mappings.TimeTableMapper;
+using learning_ms.Web.Application.Mappings.TutorProfileMapper;
 using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
@@ -225,6 +226,7 @@ try
   builder.Services.AddScoped<StudentAccommodationMapper>();
   builder.Services.AddScoped<StudentProfileMapper>();
   builder.Services.AddScoped<TimeTableMapper>();
+  builder.Services.AddScoped<TutorProfileMapper>();
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
 
