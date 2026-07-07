@@ -11,7 +11,7 @@ public class StudentProfile
   public string Email { get; set; } = string.Empty;
   public string PhoneNumber { get; set; } = string.Empty;
 
-  public string? ProfilePictureUrl { get; set; }
+  public List<string>? ProfilePictureUrl { get; set; } = [];
   public string? Description { get; set; }
 
   public DateOnly DateOfBirth { get; set; }
