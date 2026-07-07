@@ -9,6 +9,7 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     <RootNamespace>learning_ms.Web</RootNamespace>
     <WarningsAsErrors>NSDEPCOP01</WarningsAsErrors>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
   </PropertyGroup>
 
   <ItemGroup>

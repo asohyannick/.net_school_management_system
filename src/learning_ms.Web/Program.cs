@@ -22,6 +22,7 @@ using learning_ms.Web.Application.Mappings.QuizMapper;
 using learning_ms.Web.Application.Mappings.QuizOptionMapper;
 using learning_ms.Web.Application.Mappings.StudentAccommodationMapper;
 using learning_ms.Web.Application.Mappings.StudentProfileMapper;
+using learning_ms.Web.Application.Mappings.TimeTableMapper;
 using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
@@ -223,6 +224,7 @@ try
   builder.Services.AddScoped<QuizMapper>();
   builder.Services.AddScoped<StudentAccommodationMapper>();
   builder.Services.AddScoped<StudentProfileMapper>();
+  builder.Services.AddScoped<TimeTableMapper>();
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
 
@@ -285,7 +287,7 @@ try
       c.DocumentTitle = "SMS API Docs";
     });
     app.MapScalarApiReference(options =>
-    {
+    { 
       options.Title = "School Management System API";
       options.Theme = ScalarTheme.DeepSpace;
     });
