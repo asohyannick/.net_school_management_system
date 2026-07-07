@@ -24,6 +24,7 @@ using learning_ms.Web.Application.Mappings.StudentAccommodationMapper;
 using learning_ms.Web.Application.Mappings.StudentProfileMapper;
 using learning_ms.Web.Application.Mappings.TimeTableMapper;
 using learning_ms.Web.Application.Mappings.TutorProfileMapper;
+using learning_ms.Web.Application.Mappings.UserMapper;
 using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
@@ -227,6 +228,7 @@ try
   builder.Services.AddScoped<StudentProfileMapper>();
   builder.Services.AddScoped<TimeTableMapper>();
   builder.Services.AddScoped<TutorProfileMapper>();
+  builder.Services.AddScoped<UserMapper>();
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
 
@@ -253,7 +255,7 @@ try
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     try
-    {
+    { 
       await db.Database.OpenConnectionAsync();
 
       await using var command = db.Database.GetDbConnection().CreateCommand();

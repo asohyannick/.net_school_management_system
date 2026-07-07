@@ -3,14 +3,12 @@ namespace learning_ms.Web.Domain.Entities.TutorProfiles;
 public class TutorProfile
 {
   public Guid Id { get; set; }
-
   public string EmployeeId { get; set; } = default!;
-
   public string FirstName { get; set; } = default!;
   public string MiddleName { get; set; } = string.Empty;
   public string LastName { get; set; } = default!;
 
-  public required List<string> ProfilePictureUrl { get; set; } = [];
+  public List<string> ProfilePictureUrl { get; set; } = [];
 
   public GenderType Gender { get; set; } = default!;
 

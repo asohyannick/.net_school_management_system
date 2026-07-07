@@ -25,7 +25,6 @@ public partial class TutorProfileMapper
   [MapperIgnoreSource(nameof(CreateTutorProfileRequestDto.UpdatedBy))]
   [MapperIgnoreSource(nameof(CreateTutorProfileRequestDto.ProfilePictureImages))]
   public partial TutorProfile ToEntity(CreateTutorProfileRequestDto dto);
-
   [MapperIgnoreSource(nameof(TutorProfile.UpdatedAt))]
   [MapperIgnoreSource(nameof(TutorProfile.CreatedBy))]
   [MapperIgnoreSource(nameof(TutorProfile.UpdatedBy))]
