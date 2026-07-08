@@ -26,6 +26,7 @@ using learning_ms.Web.Application.Mappings.TimeTableMapper;
 using learning_ms.Web.Application.Mappings.TutorProfileMapper;
 using learning_ms.Web.Application.Mappings.UserMapper;
 using learning_ms.Web.Application.Validators.Admissions;
+using learning_ms.Web.Infrastructure.Auth.JwtServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
 using learning_ms.Web.Infrastructure.Email;
@@ -94,6 +95,7 @@ try
   });
 
   // ─── OpenAPI / Swagger ────────────────────────────────────────────────────
+  builder.Services.AddControllers();
   builder.Services.AddEndpointsApiExplorer();
   builder.Services.AddSwaggerGen(c =>
   {
@@ -203,6 +205,7 @@ try
   builder.Services.AddCorsPolicies(builder.Configuration);
   builder.Services.AddMinioStorage(builder.Configuration);
   builder.Services.AddHangfireBackgroundJobs(builder.Configuration);
+  builder.Services.AddJwtAuthentication(builder.Configuration);
 
   // ─── Application services (Mapping + Validation) ─────────────────────────
   builder.Services.AddValidatorsFromAssemblyContaining<CreateAdmissionRequestDtoValidator>();

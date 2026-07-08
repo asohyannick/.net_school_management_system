@@ -41,6 +41,8 @@
 
     <PackageReference Include="MailKit" />
 
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+
     <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
 
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
@@ -56,6 +58,7 @@
     <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
     <PackageReference Include="Stripe.net" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
 
     <PackageReference Include="Vogen">
       <IncludeAssets>compile; runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -71,6 +74,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\EventHandlers\" />
   </ItemGroup>
 
 </Project>
