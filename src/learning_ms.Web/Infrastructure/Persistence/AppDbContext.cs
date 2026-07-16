@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using learning_ms.Web.Domain.Entities.User;
+using Microsoft.EntityFrameworkCore;
 namespace learning_ms.Web.Infrastructure.Persistence;
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     // Add your DbSets here as you build entities e.g.
     // public DbSet<Student> Students => Set<Student>();
     // public DbSet<Course> Courses => Set<Course>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

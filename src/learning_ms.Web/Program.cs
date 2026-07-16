@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DotNetEnv;
 using FluentValidation;
+using learning_ms.Web.Application.Interface.IUserRepository;
 using learning_ms.Web.Application.Mappings.AccommodationMapper;
 using learning_ms.Web.Application.Mappings.AdmissionMapper;
 using learning_ms.Web.Application.Mappings.AiChatBotMapper;
@@ -26,6 +27,8 @@ using learning_ms.Web.Application.Mappings.TimeTableMapper;
 using learning_ms.Web.Application.Mappings.TutorProfileMapper;
 using learning_ms.Web.Application.Mappings.UserMapper;
 using learning_ms.Web.Application.Validators.Admissions;
+using learning_ms.Web.Domain.Entities.User;
+using learning_ms.Web.Infrastructure.ApiResponse;
 using learning_ms.Web.Infrastructure.Auth.JwtServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions;
@@ -33,15 +36,19 @@ using learning_ms.Web.Infrastructure.Email;
 using learning_ms.Web.Infrastructure.FileStorage.MinioServiceExtensions;
 using learning_ms.Web.Infrastructure.Payments.PayPal.PayPalServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.Persistence;
+using learning_ms.Web.Infrastructure.Persistence.Repositories.UserRepository;
 using learning_ms.Web.Infrastructure.RateLimiting.RateLimitingServiceCollectionExtensions;
 using learning_ms.Web.Presentation.Extensions.CorsServiceExtensions;
 using learning_ms.Web.Presentation.Middleware.MiddlewareExtensions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Serilog;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 // ─── Bootstrap logger — captures startup errors before Serilog is fully configured ──
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
@@ -95,7 +102,10 @@ try
   });
 
   // ─── OpenAPI / Swagger ────────────────────────────────────────────────────
-  builder.Services.AddControllers();
+  builder.Services
+    .AddControllers()
+    .AddJsonOptions(options => { })
+    .ConfigureApiBehaviorOptions(options => {  });
   builder.Services.AddEndpointsApiExplorer();
   builder.Services.AddSwaggerGen(c =>
   {
@@ -206,9 +216,20 @@ try
   builder.Services.AddMinioStorage(builder.Configuration);
   builder.Services.AddHangfireBackgroundJobs(builder.Configuration);
   builder.Services.AddJwtAuthentication(builder.Configuration);
+  
+  // ─── Mediator (source-generator based, not MediatR) ──────────────────────
+  builder.Services.AddMediator(options =>
+  {
+    options.ServiceLifetime = ServiceLifetime.Scoped;
+  });
+
+// ─── Auth / Identity ───────────────────────────────────────────────────────
+  builder.Services.AddScoped<IUserRepository, UserRepository>();
+  builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 
   // ─── Application services (Mapping + Validation) ─────────────────────────
   builder.Services.AddValidatorsFromAssemblyContaining<CreateAdmissionRequestDtoValidator>();
+  builder.Services.AddFluentValidationAutoValidation();
   builder.Services.AddScoped<AdmissionMapper>();
   builder.Services.AddScoped<AccommodationMapper>();
   builder.Services.AddScoped<AiChatBotMapper>();
@@ -232,6 +253,25 @@ try
   builder.Services.AddScoped<TimeTableMapper>();
   builder.Services.AddScoped<TutorProfileMapper>();
   builder.Services.AddScoped<UserMapper>();
+  builder
+    .Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+      options.InvalidModelStateResponseFactory = context =>
+      {
+        var errors = context.ModelState
+          .Where(kvp => kvp.Value?.Errors.Count > 0)
+          .SelectMany(kvp => kvp.Value!.Errors.Select(e =>
+            string.IsNullOrEmpty(e.ErrorMessage) ? "Invalid value." : e.ErrorMessage))
+          .ToList();
+  
+        var response = ApiResponse<object>.FailureResponse(
+          "One or more validation errors occurred.", errors, 400);
+  
+        return new BadRequestObjectResult(response);
+      };
+    })
+    .AddJsonOptions(options => {  });
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
 

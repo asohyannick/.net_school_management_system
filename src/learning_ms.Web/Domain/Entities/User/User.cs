@@ -7,13 +7,14 @@ public class User
   public string LastName { get; set; } = string.Empty;
   public string Email { get; set; } = string.Empty;
   public string Password { get; set; } = string.Empty;
-  public bool IsActive { get; set; } = true;
+  public bool IsActive { get; set; } = false;
   public UserRole Role { get; set; } = UserRole.Student;
   public string OTPCode { get; set; } = string.Empty;
   public string ResendOTPCode { get; set; } = string.Empty;
   public DateTime OTPExpirationDate { get; set; } = DateTime.UtcNow;
   public string AccessToken { get; set; } = string.Empty;
   public string RefreshToken { get; set; } = string.Empty;
+  public DateTime RefreshTokenExpirationDate { get; set; } = DateTime.UtcNow;
   public string MagicLinkToken { get; set; } = string.Empty;
   public string ResendMagicLinkToken { get; set; } = string.Empty;
   public string VerifyMagicLinkToken { get; set;  } = string.Empty;
@@ -28,6 +29,8 @@ public class User
   public string? FirebaseProvider { get; set; }
 
   public string? FirebaseIdToken { get; set; }
+  
+  public int FailedLoginAttempts { get; set; } = 0;
 
   public string? FirebaseRefreshToken { get; set; }
 

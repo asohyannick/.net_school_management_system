@@ -10,13 +10,11 @@ namespace learning_ms.Web.Infrastructure.Auth.JwtTokenService;
 public class JwtTokenService : ITokenService
 {
     private readonly JwtSettings.JwtSettings _settings;
-
     public JwtTokenService(IOptions<JwtSettings.JwtSettings> settings)
     {
         _settings = settings.Value;
     }
-
-    public string GenerateAccessToken(
+    public AccessTokenResult GenerateAccessToken(
         Guid userId,
         string email,
         string firstName,
@@ -33,36 +31,33 @@ public class JwtTokenService : ITokenService
             new(ClaimTypes.Role, role.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
-
         if (additionalClaims is not null)
             claims.AddRange(additionalClaims);
-
+    
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+        var expiresAt = DateTime.UtcNow.AddMinutes(_settings.AccessTokenExpirationMinutes);
+    
         var token = new JwtSecurityToken(
             issuer: _settings.Issuer,
             audience: _settings.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(_settings.AccessTokenExpirationMinutes),
+            expires: expiresAt,
             signingCredentials: credentials
         );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+    
+        return new AccessTokenResult(new JwtSecurityTokenHandler().WriteToken(token), expiresAt);
     }
-
+    
     public RefreshTokenResult GenerateRefreshToken()
     {
         var randomBytes = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
-
         var token = Convert.ToBase64String(randomBytes);
         var expiresAt = DateTime.UtcNow.AddDays(_settings.RefreshTokenExpirationDays);
-
         return new RefreshTokenResult(token, expiresAt);
     }
-
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
     {
         var validationParameters = new TokenValidationParameters
@@ -75,11 +70,9 @@ public class JwtTokenService : ITokenService
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey)),
             ValidateLifetime = false,
         };
-
         var handler = new JwtSecurityTokenHandler();
         ClaimsPrincipal principal;
         SecurityToken securityToken;
-
         try
         {
             principal = handler.ValidateToken(token, validationParameters, out securityToken);
@@ -88,10 +81,8 @@ public class JwtTokenService : ITokenService
         {
             return null;
         }
-
         var isValidJwt = securityToken is JwtSecurityToken jwt &&
             jwt.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
-
         return isValidJwt ? principal : null;
     }
 }

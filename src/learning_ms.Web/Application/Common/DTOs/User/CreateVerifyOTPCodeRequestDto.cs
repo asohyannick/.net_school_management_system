@@ -2,5 +2,5 @@
 
 public record CreateVerifyOTPCodeRequestDto
 {
-  public required string VerifyOtpCode { get; set; }
+  public string VerifyOtpCode { get; set; } = string.Empty;
 };

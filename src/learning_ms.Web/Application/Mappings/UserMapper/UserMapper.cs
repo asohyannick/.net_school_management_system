@@ -14,6 +14,7 @@ public partial class UserMapper
   [MapperIgnoreTarget(nameof(User.OTPExpirationDate))]
   [MapperIgnoreTarget(nameof(User.AccessToken))]
   [MapperIgnoreTarget(nameof(User.RefreshToken))]
+  [MapperIgnoreTarget(nameof(User.RefreshTokenExpirationDate))]
   [MapperIgnoreTarget(nameof(User.MagicLinkToken))]
   [MapperIgnoreTarget(nameof(User.ResendMagicLinkToken))]
   [MapperIgnoreTarget(nameof(User.VerifyMagicLinkToken))]
@@ -38,9 +39,9 @@ public partial class UserMapper
   [MapperIgnoreTarget(nameof(User.CreatedAt))]
   [MapperIgnoreTarget(nameof(User.UpdatedAt))]
   [MapperIgnoreSource(nameof(CreateRegisterUserRequestDto.Password))]
+  [MapperIgnoreTarget(nameof(User.FailedLoginAttempts))] 
   public partial User ToEntity(CreateRegisterUserRequestDto dto);
 
-  // ── Login response: only safe, non-sensitive fields ──
   [MapperIgnoreSource(nameof(User.Id))]
   [MapperIgnoreSource(nameof(User.Password))]
   [MapperIgnoreSource(nameof(User.OTPCode))]
@@ -48,6 +49,7 @@ public partial class UserMapper
   [MapperIgnoreSource(nameof(User.OTPExpirationDate))]
   [MapperIgnoreSource(nameof(User.AccessToken))]
   [MapperIgnoreSource(nameof(User.RefreshToken))]
+  [MapperIgnoreSource(nameof(User.RefreshTokenExpirationDate))]
   [MapperIgnoreSource(nameof(User.MagicLinkToken))]
   [MapperIgnoreSource(nameof(User.ResendMagicLinkToken))]
   [MapperIgnoreSource(nameof(User.VerifyMagicLinkToken))]
@@ -69,5 +71,6 @@ public partial class UserMapper
   [MapperIgnoreSource(nameof(User.FirebaseCreatedAt))]
   [MapperIgnoreSource(nameof(User.IsFirebaseDisabled))]
   [MapperIgnoreSource(nameof(User.FirebaseTenantId))]
+  [MapperIgnoreSource(nameof(User.FailedLoginAttempts))] 
   public partial CreateUserLoginResponseDto ToLoginResponseDto(User entity);
 }

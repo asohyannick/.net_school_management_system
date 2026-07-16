@@ -2,7 +2,6 @@
 public class FileUploadSettings
 {
   public long MaxFileSizeBytes { get; set; } = 52_428_800; // 50MB
-
   public Dictionary<string, string[]> AllowedTypes { get; set; } = new()
   {
     ["application/pdf"] = [".pdf"],

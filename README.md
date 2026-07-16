@@ -52,21 +52,21 @@ This project exposes a suite of **RESTful Web Services** powering a large-scale 
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Language** | C# 13 |
-| **Framework** | ASP.NET Core 10 |
+| Layer | Technology                                               |
+|---|----------------------------------------------------------|
+| **Language** | C# 14                                                    |
+| **Framework** | ASP.NET Core 10                                          |
 | **Architecture** | Minimal Clean Architecture · Vertical Slice Architecture |
-| **API Style** | RESTful (FastEndpoints) |
-| **ORM** | Entity Framework Core 10 |
-| **Database** | PostgreSQL (containerized via Aspire) |
-| **Containerization** | Docker 🐳 |
-| **Orchestration** | .NET Aspire 13 |
-| **Auth** | ASP.NET Core Identity + JWT 🔐 |
-| **Email** | MailKit 4.16+ 📧 |
-| **Logging** | Serilog + OpenTelemetry 📈 |
-| **Validation** | FluentValidation ✅ |
-| **Testing** | xUnit · NSubstitute · Shouldly · Testcontainers 🧪 |
+| **API Style** | RESTful (FastEndpoints)                                  |
+| **ORM** | Entity Framework Core 10                                 |
+| **Database** | PostgreSQL (containerized via Aspire)                    |
+| **Containerization** | Docker 🐳                                                |
+| **Orchestration** | .NET Aspire 13                                           |
+| **Auth** | ASP.NET Core Identity + JWT 🔐                           |
+| **Email** | MailKit 4.16+ 📧                                         |
+| **Logging** | Serilog + OpenTelemetry 📈                               |
+| **Validation** | FluentValidation ✅                                       |
+| **Testing** | xUnit · NSubstitute · Shouldly · Testcontainers 🧪       |
 
 ---
 
