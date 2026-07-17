@@ -16,25 +16,37 @@ public static class JwtServiceCollectionExtensions
         services.AddScoped<ITokenService, JwtTokenService.JwtTokenService>();
 
         services
-            .AddAuthentication(options =>
+          .AddAuthentication(options =>
+          {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+          })
+          .AddJwtBearer(options =>
+          {
+            options.TokenValidationParameters = new TokenValidationParameters
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
+              ValidateIssuer = true,
+              ValidIssuer = jwtSettings.Issuer,
+              ValidateAudience = true,
+              ValidAudience = jwtSettings.Audience,
+              ValidateIssuerSigningKey = true,
+              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+              ValidateLifetime = true,
+              ClockSkew = TimeSpan.FromMinutes(1),
+            };
+
+            options.Events = new JwtBearerEvents
             {
-                options.TokenValidationParameters = new TokenValidationParameters
+              OnMessageReceived = context =>
+              {
+                if (context.Request.Cookies.TryGetValue("accessToken", out var token))
                 {
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidateAudience = true,
-                    ValidAudience = jwtSettings.Audience,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1),
-                };
-            });
+                  context.Token = token;
+                }
+                return Task.CompletedTask;
+              }
+            };
+          });
 
         services.AddAuthorization();
 

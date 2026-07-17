@@ -2,38 +2,38 @@
 
 public record CreateCourseRequestDto
 {
-  public Guid? Id { get; init; }
+  public Guid? Id { get; init; } = Guid.Empty;
   public bool? IsActive { get; init; } = true;
   public bool? IsPublished { get; init; }
-  public DateTime? CreatedAt { get; init; }
-  public DateTime? UpdatedAt { get; init; }
-  public Guid? CreatedBy { get; init; }
-  public Guid? UpdatedBy { get; init; }
+  public DateTime? CreatedAt { get; init; } = DateTime.UtcNow;
+  public DateTime? UpdatedAt { get; init; } = DateTime.UtcNow;
+  public Guid? CreatedBy { get; init; } = Guid.Empty;
+  public Guid? UpdatedBy { get; init; } = Guid.Empty;
 
-  public required string CourseCode { get; init; }
-  public required string CourseTitle { get; init; }
-  public string? ShortName { get; init; }
-  public string? Description { get; init; }
+  public string CourseCode { get; init; } = string.Empty;
+  public string CourseTitle { get; init; } = string.Empty;
+  public string? ShortName { get; init; } = string.Empty;
+  public string? Description { get; init; } = string.Empty;
 
   public IFormFile? CourseImage { get; init; }
 
-  public required int CreditHours { get; init; }
-  public required int TotalLessons { get; init; }
-  public required int DurationInWeeks { get; init; }
+  public int CreditHours { get; init; }
+  public int TotalLessons { get; init; }
+  public int DurationInWeeks { get; init; }
 
-  public required string AcademicYear { get; init; }
-  public required string Semester { get; init; }
-  public required string Level { get; init; }
+  public string AcademicYear { get; init; } = string.Empty;
+  public string Semester { get; init; } = string.Empty;
+  public string Level { get; init; } = string.Empty;
 
-  public required int MaximumStudents { get; init; }
-  public required int MinimumStudents { get; init; }
-  public required decimal CourseFee { get; init; }
+  public int MaximumStudents { get; init; }
+  public int MinimumStudents { get; init; }
+  public decimal CourseFee { get; init; } = decimal.Zero;
 
-  public required DateOnly StartDate { get; init; }
-  public required DateOnly EndDate { get; init; }
+  public DateOnly StartDate { get; init; } = DateOnly.MinValue;
+  public DateOnly EndDate { get; init; } = DateOnly.MinValue;
 
-  public string? Language { get; init; }
-  public string? Syllabus { get; init; }
-  public string? LearningObjectives { get; init; }
-  public string? Prerequisites { get; init; }
+  public string? Language { get; init; } = string.Empty;
+  public string? Syllabus { get; init; } = string.Empty;
+  public string? LearningObjectives { get; init; } = string.Empty;
+  public string? Prerequisites { get; init; } = string.Empty;
 }

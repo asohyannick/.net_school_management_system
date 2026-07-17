@@ -2,24 +2,18 @@
 namespace learning_ms.Web.Application.Common.DTOs.StudentAccommodation;
 public record CreateStudentAccommodationRequestDto
 {
-  public Guid? Id { get; init; }
+  public Guid? Id { get; init; } = Guid.Empty;
   public bool? IsActive { get; init; }
-  public DateTime? CreatedAt { get; init; }
-  public DateTime? UpdatedAt { get; init; }
-
-  public required Guid StudentId { get; init; }
-  public required Guid AccommodationId { get; init; }
-
-  public required string BedNumber { get; init; }
-
-  public required DateTime CheckInDate { get; init; }
-  public DateTime? CheckOutDate { get; init; }
-  public DateTime? ExpectedCheckOutDate { get; init; }
-
-  public required decimal AccommodationFee { get; init; }
-  public decimal? AmountPaid { get; init; }
-
-  public AccommodationStatus? Status { get; init; }
-
-  public string? Remarks { get; init; }
+  public DateTime? CreatedAt { get; init; } = DateTime.UtcNow;
+  public DateTime? UpdatedAt { get; init; } = DateTime.UtcNow;
+  public Guid StudentId { get; init; } = Guid.Empty;
+  public Guid AccommodationId { get; init; } = Guid.Empty;
+  public string BedNumber { get; init; } = string.Empty;
+  public DateTime CheckInDate { get; init; } = DateTime.MinValue;
+  public DateTime? CheckOutDate { get; init; } = DateTime.UtcNow;
+  public DateTime? ExpectedCheckOutDate { get; init; } = DateTime.UtcNow;
+  public decimal AccommodationFee { get; init; } = decimal.Zero;
+  public decimal? AmountPaid { get; init; } = decimal.Zero;
+  public AccommodationStatus? Status { get; init; } = AccommodationStatus.Active;
+  public string? Remarks { get; init; } = string.Empty;
 }

@@ -31,12 +31,15 @@ using learning_ms.Web.Domain.Entities.User;
 using learning_ms.Web.Infrastructure.ApiResponse;
 using learning_ms.Web.Infrastructure.Auth.JwtServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
-using learning_ms.Web.Infrastructure.ConfigurationExtensions;
+using learning_ms.Web.Infrastructure.ConfigurationExtensions.ConfigurationExtensions;
+using learning_ms.Web.Infrastructure.ConfigurationExtensions.RoleSeedSettingsExtensions;
 using learning_ms.Web.Infrastructure.Email;
 using learning_ms.Web.Infrastructure.FileStorage.MinioServiceExtensions;
 using learning_ms.Web.Infrastructure.Payments.PayPal.PayPalServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.Persistence;
+using learning_ms.Web.Infrastructure.Persistence.Conventions;
 using learning_ms.Web.Infrastructure.Persistence.Repositories.UserRepository;
+using learning_ms.Web.Infrastructure.Persistence.Seeding;
 using learning_ms.Web.Infrastructure.RateLimiting.RateLimitingServiceCollectionExtensions;
 using learning_ms.Web.Presentation.Extensions.CorsServiceExtensions;
 using learning_ms.Web.Presentation.Middleware.MiddlewareExtensions;
@@ -45,6 +48,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Serilog;
@@ -76,9 +80,15 @@ try
   builder.Configuration.AddEnvironmentVariables();
   builder.Configuration.ResolveEnvironmentVariables();
 
-  // ─── Controllers + JSON ───────────────────────────────────────────────────
-  builder
-    .Services.AddControllers()
+  // ─── API version — single source of truth, reused everywhere below ────────
+  var apiVersion = builder.Configuration["ApiSettings:Version"] ?? "v1";
+
+  // ─── Controllers + JSON + global "api/{version}" route prefix ─────────────
+  builder.Services
+    .AddControllers(options =>
+    {
+      options.Conventions.Add(new RoutePrefixConvention($"api/{apiVersion}"));
+    })
     .AddJsonOptions(options =>
     {
       options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -88,7 +98,25 @@ try
       options.JsonSerializerOptions.Converters.Add(
         new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
       );
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+      options.InvalidModelStateResponseFactory = context =>
+      {
+        var errors = context.ModelState
+          .Where(kvp => kvp.Value?.Errors.Count > 0)
+          .SelectMany(kvp => kvp.Value!.Errors.Select(e =>
+            string.IsNullOrEmpty(e.ErrorMessage) ? "Invalid value." : e.ErrorMessage))
+          .ToList();
+
+        var response = ApiResponse<object>.FailureResponse(
+          "One or more validation errors occurred.", errors, 400);
+
+        return new BadRequestObjectResult(response);
+      };
     });
+
+  builder.Services.AddEndpointsApiExplorer();
 
   builder.Services.ConfigureHttpJsonOptions(options =>
   {
@@ -101,20 +129,18 @@ try
     );
   });
 
+  builder.Services.Configure<RoleSeedSettingsExtensions>(
+    builder.Configuration.GetSection(RoleSeedSettingsExtensions.SectionName));
+
   // ─── OpenAPI / Swagger ────────────────────────────────────────────────────
-  builder.Services
-    .AddControllers()
-    .AddJsonOptions(options => { })
-    .ConfigureApiBehaviorOptions(options => {  });
-  builder.Services.AddEndpointsApiExplorer();
   builder.Services.AddSwaggerGen(c =>
   {
     c.SwaggerDoc(
-      "v1",
+      apiVersion,
       new OpenApiInfo
       {
         Title = "School Management System API — Built with ❤️ by Asoh Yannick .NET Developer .",
-        Version = builder.Configuration["ApiSettings:Version"] ?? "v1",
+        Version = apiVersion,
         Description =
           "RESTful API for managing school operations — students, courses, enrollments, staff and more.",
         Contact = new OpenApiContact { Name = "Backend Team", Email = "dev@school.com" },
@@ -148,6 +174,14 @@ try
         },
       }
     );
+
+    // ─── XML comments for Swagger descriptions ──────────────────────────────
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+      c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+    }
   });
 
   // ─── Database ─────────────────────────────────────────────────────────────
@@ -216,14 +250,14 @@ try
   builder.Services.AddMinioStorage(builder.Configuration);
   builder.Services.AddHangfireBackgroundJobs(builder.Configuration);
   builder.Services.AddJwtAuthentication(builder.Configuration);
-  
+
   // ─── Mediator (source-generator based, not MediatR) ──────────────────────
   builder.Services.AddMediator(options =>
   {
     options.ServiceLifetime = ServiceLifetime.Scoped;
   });
 
-// ─── Auth / Identity ───────────────────────────────────────────────────────
+  // ─── Auth / Identity ───────────────────────────────────────────────────────
   builder.Services.AddScoped<IUserRepository, UserRepository>();
   builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 
@@ -253,41 +287,33 @@ try
   builder.Services.AddScoped<TimeTableMapper>();
   builder.Services.AddScoped<TutorProfileMapper>();
   builder.Services.AddScoped<UserMapper>();
-  builder
-    .Services.AddControllers()
-    .ConfigureApiBehaviorOptions(options =>
-    {
-      options.InvalidModelStateResponseFactory = context =>
-      {
-        var errors = context.ModelState
-          .Where(kvp => kvp.Value?.Errors.Count > 0)
-          .SelectMany(kvp => kvp.Value!.Errors.Select(e =>
-            string.IsNullOrEmpty(e.ErrorMessage) ? "Invalid value." : e.ErrorMessage))
-          .ToList();
-  
-        var response = ApiResponse<object>.FailureResponse(
-          "One or more validation errors occurred.", errors, 400);
-  
-        return new BadRequestObjectResult(response);
-      };
-    })
-    .AddJsonOptions(options => {  });
+
   // ─── HttpClient pooling ───────────────────────────────────────────────────
   builder.Services.AddHttpClient();
 
   // ─── Health checks ────────────────────────────────────────────────────────
-  var connectionString = builder
-    .Services.AddHealthChecks()
+  var redisConnectionString = builder.Configuration["CacheSettings:RedisConnectionString"];
+
+  var healthChecksBuilder = builder.Services
+    .AddHealthChecks()
     .AddNpgSql(
       builder.Configuration.GetConnectionString("DefaultConnection")!,
       name: "postgresql",
       tags: ["db", "ready"]
-    )
-    .AddRedis(
-      builder.Configuration["CacheSettings:RedisConnectionString"]!,
+    );
+
+  if (!string.IsNullOrWhiteSpace(redisConnectionString))
+  {
+    healthChecksBuilder.AddRedis(
+      redisConnectionString,
       name: "redis",
       tags: ["cache", "ready"]
     );
+  }
+  else
+  {
+    Log.Warning("CacheSettings:RedisConnectionString is not set — skipping Redis health check.");
+  }
   // ─────────────────────────────────────────────────────────────────────────
   var app = builder.Build();
   // ─────────────────────────────────────────────────────────────────────────
@@ -319,6 +345,17 @@ try
     }
   }
 
+  // ─── Role account seeding ─────────────────────────────────────────────────
+  using (var seedScope = app.Services.CreateScope())
+  {
+    var db = seedScope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var passwordHasher = seedScope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
+    var settingsOptions = seedScope.ServiceProvider.GetRequiredService<IOptions<RoleSeedSettingsExtensions>>();
+    var logger = seedScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    await RoleAccountSeeder.SeedAsync(
+      db, passwordHasher, settingsOptions, logger);
+  }
+
   // ─── Middleware pipeline — ORDER IS CRITICAL ──────────────────────────────
 
   // 1. Dev tooling (never reaches production)
@@ -327,8 +364,8 @@ try
     app.UseSwagger(c => c.RouteTemplate = "swagger/{documentName}/swagger.json");
     app.UseSwaggerUI(c =>
     {
-      c.SwaggerEndpoint("/swagger/v1/swagger.json", "School Management System API v1");
-      c.RoutePrefix = "api/v1/docs";
+      c.SwaggerEndpoint($"/swagger/{apiVersion}/swagger.json", $"School Management System API {apiVersion}");
+      c.RoutePrefix = $"api/{apiVersion}/docs";
       c.DisplayRequestDuration();
       c.EnableDeepLinking();
       c.DocumentTitle = "SMS API Docs";
@@ -344,7 +381,10 @@ try
 
   app.UseResponseCompression();
 
-  app.UseHttpsRedirection();
+  if (!app.Environment.IsDevelopment())
+  {
+    app.UseHttpsRedirection();
+  }
 
   app.UseCorsPolicy(builder.Configuration);
 
@@ -364,15 +404,14 @@ try
   // ─── Startup banner ───────────────────────────────────────────────────────
   app.Lifetime.ApplicationStarted.Register(() =>
   {
-    var apiVersion = builder.Configuration["ApiSettings:Version"] ?? "v1";
     var urls = string.Join(" | ", app.Urls);
 
     Log.Information("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     Log.Information("  🏫  School Management System API");
     Log.Information("  📌  Version     : {Version}", apiVersion);
     Log.Information("  🌐  Listening   : {Urls}", urls);
-    Log.Information("  📄  Swagger UI  : http://localhost:8000/api/v1/docs");
-    Log.Information("  🚀  Scalar UI   : http://localhost:8000/scalar/v1");
+    Log.Information("  📄  Swagger UI  : http://localhost:8000/api/{Version}/docs", apiVersion);
+    Log.Information("  🚀  Scalar UI   : http://localhost:8000/scalar/{Version}", apiVersion);
     Log.Information("  ❤️   Health      : http://localhost:8000/health");
     Log.Information("  ⚙️   Environment : {Env}", app.Environment.EnvironmentName);
     Log.Information("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");

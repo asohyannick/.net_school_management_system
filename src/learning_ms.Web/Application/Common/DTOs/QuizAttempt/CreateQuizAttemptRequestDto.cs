@@ -2,25 +2,20 @@
 namespace learning_ms.Web.Application.Common.DTOs.QuizAttempt;
 public record CreateQuizAttemptRequestDto
 {
-  public Guid? Id { get; init; }
-  public DateTime? CreatedAt { get; init; }
-  public DateTime? UpdatedAt { get; init; }
-
-  public required Guid QuizId { get; init; }
-  public required Guid StudentId { get; init; }
-
-  public int? AttemptNumber { get; init; }
-
-  public DateTime? StartedAt { get; init; }
-  public DateTime? SubmittedAt { get; init; }
-  public TimeSpan? TimeTaken { get; init; }
-
-  public decimal? Score { get; init; }
-  public decimal? TotalMarks { get; init; }
-  public decimal? Percentage { get; init; }
-
-  public bool? IsPassed { get; init; }
-  public QuizAttemptStatus? Status { get; init; }
-  public bool? IsCompleted { get; init; }
-  public bool? IsGraded { get; init; }
+  public Guid? Id { get; init; } = Guid.Empty;
+  public DateTime? CreatedAt { get; init; } = DateTime.Now;
+  public DateTime? UpdatedAt { get; init; } = DateTime.Now;
+  public Guid QuizId { get; init; } = Guid.Empty;
+  public Guid StudentId { get; init; } =  Guid.Empty;
+  public int? AttemptNumber { get; init; } 
+  public DateTime? StartedAt { get; init; } = DateTime.Now;
+  public DateTime? SubmittedAt { get; init; } =  DateTime.Now;
+  public TimeSpan? TimeTaken { get; init; } = TimeSpan.Zero;
+  public decimal? Score { get; init; } = decimal.Zero;
+  public decimal? TotalMarks { get; init; } = decimal.Zero;
+  public decimal? Percentage { get; init; } = decimal.Zero;
+  public bool? IsPassed { get; init; } = false;
+  public QuizAttemptStatus? Status { get; init; } = QuizAttemptStatus.Cancelled;
+  public bool? IsCompleted { get; init; } = false;
+  public bool? IsGraded { get; init; } = false;
 }

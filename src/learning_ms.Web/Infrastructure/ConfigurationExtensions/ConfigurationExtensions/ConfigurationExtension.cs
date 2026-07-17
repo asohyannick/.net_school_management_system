@@ -1,4 +1,4 @@
-﻿namespace learning_ms.Web.Infrastructure.ConfigurationExtensions;
+﻿namespace learning_ms.Web.Infrastructure.ConfigurationExtensions.ConfigurationExtensions;
 using System.Text.RegularExpressions;
 public static class ConfigurationExtensions
 {

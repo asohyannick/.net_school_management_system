@@ -4,67 +4,53 @@ using Microsoft.AspNetCore.Http;
 
 public record CreateStudentProfileRequestDto
 {
-  public Guid? Id { get; init; }
+  public Guid? Id { get; init; } = Guid.Empty;
   public bool? IsActive { get; init; }
   public bool? IsGraduated { get; init; }
-  public DateTime? CreatedAt { get; init; }
-  public DateTime? UpdatedAt { get; init; }
-  public Guid? CreatedBy { get; init; }
-  public Guid? UpdatedBy { get; init; }
-
-  public required string AdmissionNumber { get; init; }
-  public required string FirstName { get; init; }
-  public string? MiddleName { get; init; }
-  public required string LastName { get; init; }
-  public string? Email { get; init; }
-  public string? PhoneNumber { get; init; }
-
-  public string? Description { get; init; }
-
-  public required DateOnly DateOfBirth { get; init; }
-
-  public required GenderType Gender { get; init; }
-  public required string Nationality { get; init; }
-  public string? PlaceOfBirth { get; init; }
-
-  public List<string>? Hobbies { get; init; }
-
-  public string? BloodGroup { get; init; }
-  public string? Religion { get; init; }
-
-  public required string CurrentClass { get; init; }
-  public string? Section { get; init; }
-  public required string AcademicYear { get; init; }
-
+  public DateTime? CreatedAt { get; init; } = DateTime.UtcNow;
+  public DateTime? UpdatedAt { get; init; } = DateTime.UtcNow;
+  public Guid? CreatedBy { get; init; } = Guid.Empty;
+  public Guid? UpdatedBy { get; init; } = Guid.Empty;
+  public string AdmissionNumber { get; init; } = string.Empty;
+  public string FirstName { get; init; } = string.Empty;
+  public string MiddleName { get; init; } = string.Empty;
+  public string LastName { get; init; } = string.Empty;
+  public string? Email { get; init; } = string.Empty;
+  public string? PhoneNumber { get; init; } = string.Empty;
+  public string? Description { get; init; } = string.Empty;
+  public DateOnly DateOfBirth { get; init; } = DateOnly.FromDateTime(DateTime.Now);
+  public GenderType Gender { get; init; } = GenderType.Female;
+  public string Nationality { get; init; } =  string.Empty;
+  public string? PlaceOfBirth { get; init; } = string.Empty;
+  public List<string>? Hobbies { get; init; } = [];
+  public string? BloodGroup { get; init; } = string.Empty;
+  public string? Religion { get; init; } = string.Empty;
+  public string CurrentClass { get; init; } = string.Empty;
+  public string? Section { get; init; } = string.Empty;
+  public string AcademicYear { get; init; } = string.Empty;
   public required DateOnly AdmissionDate { get; init; }
-
-  public string? FatherFullName { get; init; }
-  public string? FatherPhoneNumber { get; init; }
-  public string? FatherOccupation { get; init; }
-
-  public string? MotherFullName { get; init; }
-  public string? MotherPhoneNumber { get; init; }
-  public string? MotherOccupation { get; init; }
-
-  public string? GuardianFullName { get; init; }
-  public string? GuardianRelationship { get; init; }
-  public string? GuardianPhoneNumber { get; init; }
-  public string? GuardianEmail { get; init; }
-
-  public required string EmergencyContactName { get; init; }
-  public required string EmergencyContactPhoneNumber { get; init; }
-  public required string EmergencyContactRelationship { get; init; }
-
-  public required string Address { get; init; }
-  public required string City { get; init; }
-  public string? State { get; init; }
-  public string? PostalCode { get; init; }
-  public required string Country { get; init; }
-
-  public string? Allergies { get; init; }
-  public string? MedicalConditions { get; init; }
-  public string? Medications { get; init; }
+  public string? FatherFullName { get; init; } = string.Empty;
+  public string? FatherPhoneNumber { get; init; } = string.Empty;
+  public string? FatherOccupation { get; init; } = string.Empty;
+  public string? MotherFullName { get; init; } = string.Empty;
+  public string? MotherPhoneNumber { get; init; } = string.Empty;
+  public string? MotherOccupation { get; init; } = string.Empty;
+  public string? GuardianFullName { get; init; } = string.Empty;
+  public string? GuardianRelationship { get; init; } = string.Empty;
+  public string? GuardianPhoneNumber { get; init; } = string.Empty;
+  public string? GuardianEmail { get; init; } = string.Empty;
+  public string EmergencyContactName { get; init; } = string.Empty;
+  public string EmergencyContactPhoneNumber { get; init; } = string.Empty;
+  public string EmergencyContactRelationship { get; init; } = string.Empty;
+  public string Address { get; init; } = string.Empty;
+  public string City { get; init; } = string.Empty;
+  public string? State { get; init; } = string.Empty;
+  public string? PostalCode { get; init; } = string.Empty;
+  public string Country { get; init; } = string.Empty;
+  public string? Allergies { get; init; } = string.Empty;
+  public string? MedicalConditions { get; init; } = string.Empty;
+  public string? Medications { get; init; } = string.Empty;
 
   // ── File uploads — bound from multipart/form-data, 
-  public List<IFormFile>? ProfilePictureImages { get; init; }
+  public List<IFormFile>? ProfilePictureImages { get; init; } = [];
 }

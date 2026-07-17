@@ -9,4 +9,6 @@ public interface IUserRepository
     void Update(User user);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<User?> GetByOtpCodeAsync(string otpCode, CancellationToken cancellationToken = default);
+    Task<(List<User> Items, int TotalCount)> GetPagedAsync(int page, int perPage, CancellationToken cancellationToken = default);
+    void Remove(User user);
 }

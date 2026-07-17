@@ -2,5 +2,5 @@
 
 public class CreateVerifyMagicLinkTokenRequestDto
 {
-      public required string VerifyMagicLinkToken { get; set; }
+      public string VerifyMagicLinkToken { get; set; } = string.Empty;
 }

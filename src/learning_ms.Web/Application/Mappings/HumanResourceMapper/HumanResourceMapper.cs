@@ -33,7 +33,5 @@ public partial class HumanResourceMapper
     [MapperIgnoreSource(nameof(HumanResource.CreatedBy))]
     [MapperIgnoreSource(nameof(HumanResource.UpdatedBy))]
     [MapperIgnoreSource(nameof(HumanResource.UpdatedAt))]
-    [MapperIgnoreSource(nameof(HumanResource.TotalCandidatesInterviewed))]
-    [MapperIgnoreSource(nameof(HumanResource.TotalEmployeesHired))]
     public partial CreateEmployeeResponseDto ToResponseDto(HumanResource entity);
 }

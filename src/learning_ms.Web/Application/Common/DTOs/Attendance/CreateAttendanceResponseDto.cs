@@ -2,23 +2,23 @@
 namespace learning_ms.Web.Application.Common.DTOs.Attendance;
 public record CreateAttendanceResponseDto
 {
-  public required Guid Id { get; init; }
-  public required Guid StudentId { get; init; }
-  public required Guid CourseId { get; init; }
-  public required Guid TutorId { get; init; }
-  public Guid? ClassroomId { get; init; }
+  public Guid Id { get; init; } = Guid.Empty;
+  public Guid StudentId { get; init; } = Guid.Empty;
+  public Guid CourseId { get; init; } = Guid.Empty;
+  public Guid TutorId { get; init; } = Guid.Empty;
+  public Guid? ClassroomId { get; init; } = Guid.Empty;
 
-  public required DateOnly AttendanceDate { get; init; }
-  public TimeOnly? CheckInTime { get; init; }
-  public TimeOnly? CheckOutTime { get; init; }
+  public DateOnly AttendanceDate { get; init; } = DateOnly.MinValue;
+  public TimeOnly? CheckInTime { get; init; } = TimeOnly.MinValue;
+  public TimeOnly? CheckOutTime { get; init; } = TimeOnly.MinValue;
 
-  public required AttendanceStatus Status { get; init; }
-  public string? Reason { get; init; }
-  public required bool IsExcused { get; init; }
-  public required bool IsLate { get; init; }
+  public AttendanceStatus Status { get; init; } = AttendanceStatus.Present;
+  public string? Reason { get; init; } = string.Empty;
+  public bool IsExcused { get; init; }
+  public bool IsLate { get; init; }
   public int? MinutesLate { get; init; }
-  public string? Remarks { get; init; }
+  public string? Remarks { get; init; } = string.Empty;
 
-  public required Guid RecordedBy { get; init; }
-  public required DateTime CreatedAt { get; init; }
+  public Guid RecordedBy { get; init; } = Guid.Empty;
+  public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 }

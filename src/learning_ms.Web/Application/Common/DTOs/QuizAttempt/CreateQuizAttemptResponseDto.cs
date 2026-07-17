@@ -2,25 +2,19 @@
 namespace learning_ms.Web.Application.Common.DTOs.QuizAttempt;
 public record CreateQuizAttemptResponseDto
 {
-  public required Guid Id { get; init; }
-
-  public required Guid QuizId { get; init; }
-  public required Guid StudentId { get; init; }
-
-  public required int AttemptNumber { get; init; }
-
-  public required DateTime StartedAt { get; init; }
-  public DateTime? SubmittedAt { get; init; }
-  public TimeSpan? TimeTaken { get; init; }
-
-  public required decimal Score { get; init; }
-  public required decimal TotalMarks { get; init; }
-  public required decimal Percentage { get; init; }
-
-  public required bool IsPassed { get; init; }
-  public required QuizAttemptStatus Status { get; init; }
-  public required bool IsCompleted { get; init; }
-  public required bool IsGraded { get; init; }
-
-  public required DateTime CreatedAt { get; init; }
+  public Guid Id { get; init; } = Guid.Empty;
+  public Guid QuizId { get; init; } = Guid.Empty;
+  public Guid StudentId { get; init; } = Guid.Empty;
+  public int AttemptNumber { get; init; }
+  public DateTime StartedAt { get; init; } = DateTime.Now;  
+  public DateTime? SubmittedAt { get; init; } = DateTime.Now;
+  public TimeSpan? TimeTaken { get; init; } = TimeSpan.Zero;
+  public decimal Score { get; init; } = decimal.Zero;
+  public decimal TotalMarks { get; init; } = decimal.Zero;
+  public decimal Percentage { get; init; } = decimal.Zero;
+  public bool IsPassed { get; init; } = false;
+  public QuizAttemptStatus Status { get; init; } = QuizAttemptStatus.Cancelled;
+  public bool IsCompleted { get; init; } = false;
+  public bool IsGraded { get; init; } = false;
+  public DateTime CreatedAt { get; init; } = DateTime.Now;
 }

@@ -1,21 +1,21 @@
 ﻿namespace learning_ms.Web.Application.Common.DTOs.AiChatBot;
 public record CreateAiChatBotResponseDto
 {
-  public required Guid Id { get; init; }
-  public required Guid UserId { get; init; }
-  public required string SessionId { get; init; }
-  public required string ConversationTitle { get; init; }
+  public Guid Id { get; init; } = Guid.Empty;
+  public Guid UserId { get; init; } = Guid.Empty;
+  public string SessionId { get; init; } = string.Empty;
+  public string ConversationTitle { get; init; } = string.Empty;
 
-  public required string ModelName { get; init; }
-  public required double Temperature { get; init; }
-  public required int MaxTokens { get; init; }
+  public string ModelName { get; init; } = "gpt-4.1";
+  public double Temperature { get; init; } = 0.7;
+  public int MaxTokens { get; init; } = 2048;
 
-  public Guid? CourseId { get; init; }
-  public Guid? AssignmentId { get; init; }
-  public Guid? StudentId { get; init; }
-  public Guid? TutorId { get; init; }
+  public Guid? CourseId { get; init; } = Guid.Empty;
+  public Guid? AssignmentId { get; init; } = Guid.Empty;
+  public Guid? StudentId { get; init; } = Guid.Empty;
+  public Guid? TutorId { get; init; } = Guid.Empty;
 
-  public required bool IsActive { get; init; }
-  public required DateTime StartedAt { get; init; }
-  public required DateTime CreatedAt { get; init; }
+  public bool IsActive { get; init; }
+  public DateTime StartedAt { get; init; } = DateTime.UtcNow;
+  public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 }

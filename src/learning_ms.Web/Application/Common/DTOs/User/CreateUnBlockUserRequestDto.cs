@@ -2,5 +2,5 @@
 
 public class CreateUnBlockUserRequestDto
 {
-  public required string Reason { get; set;  }
+  public string Reason { get; set; } = string.Empty;
 }

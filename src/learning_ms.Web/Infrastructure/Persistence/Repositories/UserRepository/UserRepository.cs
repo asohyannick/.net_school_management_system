@@ -26,4 +26,18 @@ public class UserRepository : IUserRepository
     _context.SaveChangesAsync(cancellationToken);
   public Task<User?> GetByOtpCodeAsync(string otpCode, CancellationToken cancellationToken = default) =>
     _context.Users.FirstOrDefaultAsync(u => u.OTPCode == otpCode, cancellationToken);
+  public async Task<(List<User> Items, int TotalCount)> GetPagedAsync(
+      int page, int perPage, CancellationToken cancellationToken = default)
+  {
+      var query = _context.Users.OrderByDescending(u => u.CreatedAt);
+  
+      var totalCount = await query.CountAsync(cancellationToken);
+      var items = await query
+          .Skip((page - 1) * perPage)
+          .Take(perPage)
+          .ToListAsync(cancellationToken);
+  
+      return (items, totalCount);
+  }
+  public void Remove(User user) => _context.Users.Remove(user);
 }
