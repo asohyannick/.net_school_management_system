@@ -1,4 +1,5 @@
 ﻿using learning_ms.Web.Application.Exceptions.BadRequestException;
+using learning_ms.Web.Application.Exceptions.InternalServerError;
 using learning_ms.Web.Application.Interface.IEmailService;
 using learning_ms.Web.Application.Interface.IUserRepository;
 using Mediator;
@@ -51,6 +52,7 @@ public class VerifyOtpCommandHandler : IRequestHandler<VerifyOtpCommand, VerifyO
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send welcome email to {Email} after OTP verification.", user.Email);
+            throw new InternalServerErrorException("Failed to send welcome email to " + ex);
         }
 
         return new VerifyOtpResult(user.Id, user.Email);

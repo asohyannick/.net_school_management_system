@@ -9,10 +9,9 @@ public class RoutePrefixConvention : IApplicationModelConvention
   {
     _routePrefix = new AttributeRouteModel(new RouteAttribute(prefix));
   }
-
   public void Apply(ApplicationModel application)
   {
-    foreach (var controller in application.Controllers)
+    foreach (var controller in application.Controllers) 
     {
       foreach (var selector in controller.Selectors)
       {

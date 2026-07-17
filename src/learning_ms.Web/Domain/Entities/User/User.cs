@@ -19,12 +19,15 @@ public class User
   public string ResendMagicLinkToken { get; set; } = string.Empty;
   public string VerifyMagicLinkToken { get; set;  } = string.Empty;
   public string ForgotPassword { get; set; } = string.Empty;
+  
+  public DateTime ForgotPasswordExpirationDate { get; set; } = DateTime.UtcNow;
   public string ResetPassword { get; set; } = string.Empty;
   public bool BlockUser { get; set; } = false;
   public bool UnBlockUser { get; set; } = false;
   public DateTime MagicLinkTokenExpirationDate { get; set; } = DateTime.UtcNow;
   // ---------- Firebase Authentication fields ----------
   public string? FirebaseUid { get; set; }
+  
 
   public string? FirebaseProvider { get; set; }
 

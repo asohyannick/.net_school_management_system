@@ -40,6 +40,7 @@ public partial class UserMapper
   [MapperIgnoreTarget(nameof(User.UpdatedAt))]
   [MapperIgnoreSource(nameof(CreateRegisterUserRequestDto.Password))]
   [MapperIgnoreTarget(nameof(User.FailedLoginAttempts))] 
+  [MapperIgnoreTarget(nameof(User.ForgotPasswordExpirationDate))]   
   public partial User ToEntity(CreateRegisterUserRequestDto dto);
 
   [MapperIgnoreSource(nameof(User.Id))]
@@ -72,6 +73,7 @@ public partial class UserMapper
   [MapperIgnoreSource(nameof(User.IsFirebaseDisabled))]
   [MapperIgnoreSource(nameof(User.FirebaseTenantId))]
   [MapperIgnoreSource(nameof(User.FailedLoginAttempts))] 
+  [MapperIgnoreSource(nameof(User.ForgotPasswordExpirationDate))]  
   public partial CreateUserLoginResponseDto ToLoginResponseDto(User entity);
 
   [MapperIgnoreSource(nameof(User.Password))]
@@ -102,5 +104,6 @@ public partial class UserMapper
   [MapperIgnoreSource(nameof(User.IsFirebaseDisabled))]
   [MapperIgnoreSource(nameof(User.FirebaseTenantId))]
   [MapperIgnoreSource(nameof(User.FailedLoginAttempts))]
+  [MapperIgnoreSource(nameof(User.ForgotPasswordExpirationDate))]   
   public partial UserAdminResponseDto ToAdminResponseDto(User entity);
 }

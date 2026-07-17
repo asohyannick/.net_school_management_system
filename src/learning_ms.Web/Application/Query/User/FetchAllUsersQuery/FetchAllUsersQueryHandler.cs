@@ -1,10 +1,10 @@
-﻿using learning_ms.Web.Application.Interface.IUserRepository;
+﻿using learning_ms.Web.Application.Common.DTOs.User;
+using learning_ms.Web.Application.Interface.IUserRepository;
 using learning_ms.Web.Application.Mappings.UserMapper;
 namespace learning_ms.Web.Application.Query.User.FetchAllUsersQuery;
 using Mediator;
-
 public class FetchAllUsersQueryHandler
-  : IRequestHandler<FetchAllUsersQuery, PagedResult<Common.DTOs.User.UserAdminResponseDto>>
+  : IRequestHandler<FetchAllUsersQuery, PagedResult<UserAdminResponseDto>>
 {
   private readonly IUserRepository _userRepository;
   private readonly UserMapper _userMapper;
@@ -14,8 +14,7 @@ public class FetchAllUsersQueryHandler
     _userRepository = userRepository;
     _userMapper = userMapper;
   }
-
-  public async ValueTask<PagedResult<Common.DTOs.User.UserAdminResponseDto>> Handle(
+  public async ValueTask<PagedResult<UserAdminResponseDto>> Handle(
     FetchAllUsersQuery request, CancellationToken cancellationToken)
   {
     var page = request.Page < 1 ? 1 : request.Page;
@@ -26,7 +25,12 @@ public class FetchAllUsersQueryHandler
     var dtoItems = items.Select(_userMapper.ToAdminResponseDto).ToList();
     var totalPages = (int)Math.Ceiling(totalCount / (double)perPage);
 
-    return new PagedResult<Common.DTOs.User.UserAdminResponseDto>(
-      dtoItems, page, perPage, totalCount, totalPages);
+    return new PagedResult<UserAdminResponseDto>(
+      dtoItems, 
+      page, 
+      perPage, 
+      totalCount, 
+      totalPages
+      );
   }
 }

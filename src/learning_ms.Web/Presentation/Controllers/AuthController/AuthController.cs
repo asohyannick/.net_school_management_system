@@ -2,8 +2,11 @@
 using learning_ms.Web.Application.Command.User;
 using learning_ms.Web.Application.Command.User.BlockUserCommand;
 using learning_ms.Web.Application.Command.User.DeleteAccountCommand;
+using learning_ms.Web.Application.Command.User.ForgotPasswordCommand;
 using learning_ms.Web.Application.Command.User.LoginCommand;
 using learning_ms.Web.Application.Command.User.LogoutCommand;
+using learning_ms.Web.Application.Command.User.ResendOtpCommand;
+using learning_ms.Web.Application.Command.User.ResetPasswordCommand;
 using learning_ms.Web.Application.Command.User.UnBlockUserCommand;
 using learning_ms.Web.Application.Common.DTOs.User;
 using learning_ms.Web.Application.Exceptions.BadRequestException;
@@ -119,7 +122,7 @@ public class AuthController : ControllerBase
       Response.Cookies.Delete("accessToken");
       Response.Cookies.Delete("refreshToken");
   
-      return Ok(ApiResponse<object>.SuccessResponse("Logged out successfully."));
+      return Ok(ApiResponse<object>.SuccessResponse("Logged out successfully.", 200));
   }
 
   /// <summary>
@@ -138,7 +141,7 @@ public class AuthController : ControllerBase
       Response.Cookies.Delete("accessToken");
       Response.Cookies.Delete("refreshToken");
   
-      return Ok(ApiResponse<object>.SuccessResponse("Account deleted successfully."));
+      return Ok(ApiResponse<object>.SuccessResponse("Account deleted successfully.", 200));
   }
 
   /// <summary>
@@ -156,7 +159,11 @@ public class AuthController : ControllerBase
       [FromQuery] int page = 1, [FromQuery] int perPage = 20, CancellationToken cancellationToken = default)
   {
       var result = await _sender.Send(new FetchAllUsersQuery(page, perPage), cancellationToken);
-      return Ok(ApiResponse<PagedResult<UserAdminResponseDto>>.SuccessResponse(result));
+      return Ok(ApiResponse<PagedResult<UserAdminResponseDto>>.SuccessResponse(
+        result,
+        "Users have been fetched successfully.",
+        200
+        ));
   }
 
   /// <summary>
@@ -173,7 +180,11 @@ public class AuthController : ControllerBase
   public async Task<IActionResult> FetchUserById(Guid userId, CancellationToken cancellationToken)
   {
       var result = await _sender.Send(new FetchUserByIdQuery(userId), cancellationToken);
-      return Ok(ApiResponse<UserAdminResponseDto>.SuccessResponse(result));
+      return Ok(ApiResponse<UserAdminResponseDto>.SuccessResponse(
+        result,
+        "User has been fetched successfully.",
+        200
+        ));
   }
 
   /// <summary>
@@ -192,7 +203,7 @@ public class AuthController : ControllerBase
       Guid userId, [FromBody] CreateBlockUserRequestDto request, CancellationToken cancellationToken)
   {
       await _sender.Send(new BlockUserCommand(userId, request), cancellationToken);
-      return Ok(ApiResponse<object>.SuccessResponse("User account blocked successfully."));
+      return Ok(ApiResponse<object>.SuccessResponse("User account blocked successfully.", 201));
   }
 
   /// <summary>
@@ -211,7 +222,68 @@ public class AuthController : ControllerBase
       Guid userId, [FromBody] CreateUnBlockUserRequestDto request, CancellationToken cancellationToken)
   {
       await _sender.Send(new UnBlockUserCommand(userId, request), cancellationToken);
-      return Ok(ApiResponse<object>.SuccessResponse("User account unblocked successfully."));
+      return Ok(ApiResponse<object>.SuccessResponse("User account unblocked successfully.", 201));
+  }
+  
+  /// <summary>
+  /// Requests a password reset link for the given email.
+  /// </summary>
+  /// <remarks>
+  /// Always returns a generic success response whether or not the email is
+  /// registered, to prevent account enumeration. If registered, a reset link
+  /// valid for 30 minutes is emailed to the address.
+  /// </remarks>
+  /// <param name="request">The account email.</param>
+  /// <param name="cancellationToken">Cancellation token for the request.</param>
+  [HttpPost("forgot-password")]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+  public async Task<IActionResult> ForgotPassword(
+      [FromBody] CreateForgotPasswordRequestDto request,
+      CancellationToken cancellationToken)
+  {
+      await _sender.Send(new ForgotPasswordCommand(request), cancellationToken);
+      return Ok(ApiResponse<object>.SuccessResponse(
+          "If an account with that email exists, a password reset link has been sent.", 200));
+  }
+
+  /// <summary>
+  /// Resets a user's password using a valid reset token from the forgot-password email.
+  /// </summary>
+  /// <param name="request">Reset token, new password, and confirmation.</param>
+  /// <param name="cancellationToken">Cancellation token for the request.</param>
+  [HttpPost("reset-password")]
+  [Authorize]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+  public async Task<IActionResult> ResetPassword(
+    [FromBody] CreateResetPasswordRequestDto request,
+    CancellationToken cancellationToken)
+  {
+    var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    await _sender.Send(new ResetPasswordCommand(userId, request), cancellationToken);
+    return Ok(ApiResponse<object>.SuccessResponse(
+      "Password reset successfully. You can now log in with your new password.", 200));
+  }
+
+  /// <summary>
+  /// Resends a new OTP verification code for an unverified account.
+  /// </summary>
+  /// <remarks>
+  /// Always returns a generic success response whether or not the email is
+  /// registered, to prevent account enumeration. Invalidates the previous OTP.
+  /// </remarks>
+  /// <param name="request">The account email.</param>
+  /// <param name="cancellationToken">Cancellation token for the request.</param>
+  [HttpPost("resend-otp")]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+  public async Task<IActionResult> ResendOtp(
+      [FromBody] CreateResendOTPCodeRequestDto request,
+      CancellationToken cancellationToken)
+  {
+      await _sender.Send(new ResendOtpCommand(request), cancellationToken);
+      return Ok(ApiResponse<object>.SuccessResponse(
+          "If an account with that email exists and is unverified, a new code has been sent."));
   }
 
   private Guid GetCurrentUserId()

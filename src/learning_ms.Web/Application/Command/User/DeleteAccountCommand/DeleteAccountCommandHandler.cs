@@ -1,4 +1,5 @@
-﻿using learning_ms.Web.Application.Exceptions.NotFoundException;
+﻿using learning_ms.Web.Application.Exceptions.InternalServerError;
+using learning_ms.Web.Application.Exceptions.NotFoundException;
 using learning_ms.Web.Application.Interface.IEmailService;
 using learning_ms.Web.Application.Interface.IUserRepository;
 namespace learning_ms.Web.Application.Command.User.DeleteAccountCommand;
@@ -33,6 +34,7 @@ public class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand,
     catch (Exception ex)
     {
       _logger.LogError(ex, "Failed to send account-deletion email to {Email}.", user.Email);
+      throw new InternalServerErrorException("Failed to send account-deletion email to {Email}.", ex);
     }
 
     return Unit.Value;

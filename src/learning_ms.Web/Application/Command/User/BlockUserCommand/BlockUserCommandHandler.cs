@@ -1,7 +1,7 @@
-﻿using learning_ms.Web.Application.Exceptions.NotFoundException;
+﻿using learning_ms.Web.Application.Exceptions.InternalServerError;
+using learning_ms.Web.Application.Exceptions.NotFoundException;
 using learning_ms.Web.Application.Interface.IEmailService;
 using learning_ms.Web.Application.Interface.IUserRepository;
-
 namespace learning_ms.Web.Application.Command.User.BlockUserCommand;
 using Mediator;
 using Microsoft.Extensions.Logging;
@@ -39,6 +39,7 @@ public class BlockUserCommandHandler : IRequestHandler<BlockUserCommand, Unit>
     catch (Exception ex)
     {
       _logger.LogError(ex, "Failed to send account-blocked email to {Email}.", user.Email);
+      throw new InternalServerErrorException("Failed to send account-blocked email to {Email}.", ex);
     }
 
     return Unit.Value;

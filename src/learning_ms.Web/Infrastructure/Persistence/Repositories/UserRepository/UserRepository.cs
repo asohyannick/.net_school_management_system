@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 public class UserRepository : IUserRepository
 {
   private readonly AppDbContext _context;
-
   public UserRepository(AppDbContext context) => _context = context;
 
   public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default) =>
@@ -40,4 +39,5 @@ public class UserRepository : IUserRepository
       return (items, totalCount);
   }
   public void Remove(User user) => _context.Users.Remove(user);
+  
 }

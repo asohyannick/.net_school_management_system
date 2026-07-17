@@ -1,23 +1,24 @@
-﻿using learning_ms.Web.Application.Exceptions.BadRequestException;
+﻿using learning_ms.Web.Application.Command.User;
+using learning_ms.Web.Application.Exceptions.BadRequestException;
+using learning_ms.Web.Application.Exceptions.InternalServerError;
 using learning_ms.Web.Application.Interface.IEmailService;
 using learning_ms.Web.Application.Interface.IUserRepository;
+using learning_ms.Web.Domain.Entities.User;
 using learning_ms.Web.Domain.Enums.UserRole;
 using Mediator;
-namespace learning_ms.Web.Application.Command.User;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResult>
 {
     private const int OtpExpiryMinutes = 10;
 
     private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher<Domain.Entities.User.User> _passwordHasher;
+    private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IEmailService _emailService;
     private readonly ILogger<RegisterUserCommandHandler> _logger;
 
     public RegisterUserCommandHandler(
         IUserRepository userRepository,
-        IPasswordHasher<Domain.Entities.User.User> passwordHasher,
+        IPasswordHasher<User> passwordHasher,
         IEmailService emailService,
         ILogger<RegisterUserCommandHandler> logger)
     {
@@ -36,7 +37,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             throw new BadRequestException("An account with this email already exists.");
         }
 
-        var user = new Domain.Entities.User.User
+        var user = new User
         {
             Id = Guid.NewGuid(),
             FirstName = dto.FirstName,
@@ -63,7 +64,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send OTP email to {Email} after registration.", user.Email);
-            // Don't fail registration if email fails — user can trigger resend
+            throw new InternalServerErrorException("Failed to send OTP email.", ex);
         }
 
         return new RegisterUserResult(user.Id, user.Email);

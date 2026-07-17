@@ -1,4 +1,5 @@
-﻿using learning_ms.Web.Application.Exceptions.NotFoundException;
+﻿using learning_ms.Web.Application.Exceptions.InternalServerError;
+using learning_ms.Web.Application.Exceptions.NotFoundException;
 using learning_ms.Web.Application.Interface.IEmailService;
 using learning_ms.Web.Application.Interface.IUserRepository;
 namespace learning_ms.Web.Application.Command.User.UnBlockUserCommand;
@@ -38,6 +39,7 @@ public class UnBlockUserCommandHandler : IRequestHandler<UnBlockUserCommand, Uni
     catch (Exception ex)
     {
       _logger.LogError(ex, "Failed to send account-unblocked email to {Email}.", user.Email);
+      throw new InternalServerErrorException("Failed to send account-unblocked email to {Email}.", ex);
     }
 
     return Unit.Value;
