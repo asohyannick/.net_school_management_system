@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DotNetEnv;
 using FluentValidation;
+using learning_ms.Web.Application.Exceptions.InternalServerError;
 using learning_ms.Web.Application.Interface.IUserRepository;
 using learning_ms.Web.Application.Mappings.AccommodationMapper;
 using learning_ms.Web.Application.Mappings.AdmissionMapper;
@@ -42,6 +43,7 @@ using learning_ms.Web.Infrastructure.Persistence.Repositories.UserRepository;
 using learning_ms.Web.Infrastructure.Persistence.Seeding;
 using learning_ms.Web.Infrastructure.RateLimiting.RateLimitingServiceCollectionExtensions;
 using learning_ms.Web.Presentation.Extensions.CorsServiceExtensions;
+using learning_ms.Web.Presentation.Filters.TagDescriptionsDocumentFilter;
 using learning_ms.Web.Presentation.Middleware.MiddlewareExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +52,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using Scalar.AspNetCore;
 using Serilog;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
@@ -135,6 +136,19 @@ try
   // ─── OpenAPI / Swagger ────────────────────────────────────────────────────
   builder.Services.AddSwaggerGen(c =>
   {
+    c.TagActionsBy(api =>
+    {
+      var tags = api.ActionDescriptor.EndpointMetadata
+        .OfType<TagsAttribute>()
+        .FirstOrDefault();
+
+      return tags?.Tags.ToList()
+             ?? new List<string>
+             {
+               api.GroupName ?? api.ActionDescriptor.RouteValues["controller"]!
+             };
+    });
+    c.DocumentFilter<TagDescriptionsDocumentFilter>();
     c.SwaggerDoc(
       apiVersion,
       new OpenApiInfo
@@ -337,7 +351,7 @@ try
     catch (Exception ex)
     {
       logger.LogError(ex, "❌ PostgreSQL connection failed — check your .env credentials");
-      throw;
+      throw new InternalServerErrorException("❌ PostgreSQL connection failed — check your .env credentials", ex);
     } 
     finally 
     {
@@ -369,11 +383,6 @@ try
       c.DisplayRequestDuration();
       c.EnableDeepLinking();
       c.DocumentTitle = "SMS API Docs";
-    });
-    app.MapScalarApiReference(options =>
-    { 
-      options.Title = "School Management System API";
-      options.Theme = ScalarTheme.DeepSpace;
     });
   }
 
@@ -422,6 +431,7 @@ try
 catch (Exception ex) when (ex is not HostAbortedException)
 {
   Log.Fatal(ex, "❌ Application terminated unexpectedly during startup");
+  throw new InternalServerErrorException("❌Application terminated unexpectedly during startup", ex);
 }
 finally
 {

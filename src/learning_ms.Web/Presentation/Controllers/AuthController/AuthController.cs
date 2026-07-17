@@ -18,10 +18,6 @@ using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace learning_ms.Web.Presentation.Controllers.AuthController;
-/// <summary>
-/// Handles user authentication and authorization — registration, OTP verification,
-/// login/logout, session management, and admin-level account moderation.
-/// </summary>
 [ApiController]
 [Route("auth")]
 [Tags("Authentication and Authorization of Users")]
