@@ -96,37 +96,42 @@ public class JwtTokenService : ITokenService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
     private ClaimsPrincipal? ValidateInternal(string token, bool validateLifetime)
     {
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = true,
-            ValidAudience = _settings.Audience,
-            ValidateIssuer = true,
-            ValidIssuer = _settings.Issuer,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey)),
-            ValidateLifetime = validateLifetime,
-            ClockSkew = TimeSpan.FromSeconds(30),
-        };
+      var validationParameters = new TokenValidationParameters
+      {
+        ValidateAudience = true,
+        ValidAudience = _settings.Audience,
+        ValidateIssuer = true,
+        ValidIssuer = _settings.Issuer,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey)),
+        ValidateLifetime = validateLifetime,
+        ClockSkew = TimeSpan.FromSeconds(30),
+      };
 
-        var handler = new JwtSecurityTokenHandler();
-        ClaimsPrincipal principal;
-        SecurityToken securityToken;
+      var handler = new JwtSecurityTokenHandler
+      {
+        MapInboundClaims = false,
+      };
+      ClaimsPrincipal principal;
+      SecurityToken securityToken;
 
-        try
-        {
-            principal = handler.ValidateToken(token, validationParameters, out securityToken);
-        }
-        catch
-        {
-            return null;
-        }
+      try
+      {
+        principal = handler.ValidateToken(token, validationParameters, out securityToken);
+      }
+      catch
+      {
+        return null;
+      }
 
-        var isValidJwt = securityToken is JwtSecurityToken jwt &&
-            jwt.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
+      var isValidJwt = securityToken is JwtSecurityToken jwt &&
+                       jwt.Header.Alg.Equals(
+                         SecurityAlgorithms.HmacSha256, 
+                         StringComparison.InvariantCultureIgnoreCase
+                       );
 
-        return isValidJwt ? principal : null;
+      return isValidJwt ? principal : null;
     }
 }

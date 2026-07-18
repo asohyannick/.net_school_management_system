@@ -5,6 +5,7 @@ using learning_ms.Web.Application.Command.User.DeleteAccountCommand;
 using learning_ms.Web.Application.Command.User.ForgotPasswordCommand;
 using learning_ms.Web.Application.Command.User.LoginCommand;
 using learning_ms.Web.Application.Command.User.LogoutCommand;
+using learning_ms.Web.Application.Command.User.RefreshTokenCommand;
 using learning_ms.Web.Application.Command.User.ResendMagicLinkCommand;
 using learning_ms.Web.Application.Command.User.ResendOtpCommand;
 using learning_ms.Web.Application.Command.User.ResetPasswordCommand;
@@ -369,6 +370,34 @@ public class AuthController : ControllerBase
   
       return Ok(ApiResponse<CreateUserLoginResponseDto>.SuccessResponse(
           result.User, "Signed in successfully via Firebase."));
+  }
+  
+  /// <summary>
+  /// Issues a new access token using a valid, unexpired refresh token.
+  /// </summary>
+  /// <remarks>
+  /// Validates the refresh token's signature, issuer/audience, expiry, and <c>token_use</c>
+  /// claim, then checks it against the token stored on the user's record — this is what
+  /// allows a refresh token to be revoked (via logout, account block, or password reset)
+  /// even though the JWT itself would otherwise still be valid. On success, both the
+  /// access token and refresh token are rotated; the previous refresh token becomes
+  /// invalid immediately. Clients should call this endpoint when an access token expires
+  /// instead of requiring the user to log in again.
+  /// </remarks>
+  /// <param name="request">The refresh token previously issued at login.</param>
+  /// <param name="cancellationToken">Cancellation token for the request.</param>
+  [HttpPost("refresh-token")]
+  [ProducesResponseType(typeof(ApiResponse<RefreshTokenResult>), StatusCodes.Status200OK)]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+  public async Task<IActionResult> RefreshToken(
+    [FromBody] RefreshTokenRequestDto request,
+    CancellationToken cancellationToken)
+  {
+    var result = await _sender.Send(new RefreshTokenCommand(request), cancellationToken);
+
+    return Ok(ApiResponse<RefreshTokenResult>.SuccessResponse(
+      result, "Access token refreshed successfully."));
   }
 
   private Guid GetCurrentUserId()
