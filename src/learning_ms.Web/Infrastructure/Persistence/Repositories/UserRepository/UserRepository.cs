@@ -40,4 +40,7 @@ public class UserRepository : IUserRepository
   }
   public void Remove(User user) => _context.Users.Remove(user);
   
+  public Task<User?> GetByMagicLinkTokenAsync(string token, CancellationToken cancellationToken = default) =>
+    _context.Users.FirstOrDefaultAsync(u => u.MagicLinkToken == token, cancellationToken);
+  
 }

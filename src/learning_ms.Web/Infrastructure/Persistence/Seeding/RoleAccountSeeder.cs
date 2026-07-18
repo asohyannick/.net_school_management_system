@@ -2,11 +2,9 @@
 using learning_ms.Web.Domain.Enums.UserRole;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions.RoleSeedSettingsExtensions;
 namespace learning_ms.Web.Infrastructure.Persistence.Seeding;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-
 public static class RoleAccountSeeder
 {
     public static async Task SeedAsync(
@@ -88,7 +86,7 @@ public static class RoleAccountSeeder
             var exists = await dbContext.Users.AnyAsync(u => u.Email == email, cancellationToken);
             if (exists)
             {
-                continue; // already seeded — idempotent, safe to run every startup
+                continue; 
             }
 
             var user = new User

@@ -12,7 +12,7 @@ using learning_ms.Web.Infrastructure.Persistence;
 namespace learning_ms.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260716163521_InitialCreate")]
+    [Migration("20260718095502_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -96,8 +96,13 @@ namespace learning_ms.Web.Migrations
 
                     b.Property<string>("ForgotPassword")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("forgot_password");
+
+                    b.Property<DateTime>("ForgotPasswordExpirationDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("forgot_password_expiration_date");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")

@@ -11,4 +11,5 @@ public interface IUserRepository
     Task<User?> GetByOtpCodeAsync(string otpCode, CancellationToken cancellationToken = default);
     Task<(List<User> Items, int TotalCount)> GetPagedAsync(int page, int perPage, CancellationToken cancellationToken = default);
     void Remove(User user);
+    Task<User?> GetByMagicLinkTokenAsync(string token, CancellationToken cancellationToken = default);
 }

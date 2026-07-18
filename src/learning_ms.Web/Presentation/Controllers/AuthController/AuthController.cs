@@ -5,9 +5,12 @@ using learning_ms.Web.Application.Command.User.DeleteAccountCommand;
 using learning_ms.Web.Application.Command.User.ForgotPasswordCommand;
 using learning_ms.Web.Application.Command.User.LoginCommand;
 using learning_ms.Web.Application.Command.User.LogoutCommand;
+using learning_ms.Web.Application.Command.User.ResendMagicLinkCommand;
 using learning_ms.Web.Application.Command.User.ResendOtpCommand;
 using learning_ms.Web.Application.Command.User.ResetPasswordCommand;
+using learning_ms.Web.Application.Command.User.SendMagicLinkCommand;
 using learning_ms.Web.Application.Command.User.UnBlockUserCommand;
+using learning_ms.Web.Application.Command.User.VerifyMagicLinkCommand;
 using learning_ms.Web.Application.Common.DTOs.User;
 using learning_ms.Web.Application.Exceptions.BadRequestException;
 using learning_ms.Web.Application.Query.User.FetchAllUsersQuery;
@@ -280,6 +283,65 @@ public class AuthController : ControllerBase
       await _sender.Send(new ResendOtpCommand(request), cancellationToken);
       return Ok(ApiResponse<object>.SuccessResponse(
           "If an account with that email exists and is unverified, a new code has been sent."));
+  }
+  
+  /// <summary>
+  /// Sends a passwordless sign-in link to the given email.
+  /// </summary>
+  /// <remarks>
+  /// Always returns a generic success response whether or not the email is
+  /// registered, active, or blocked, to prevent account enumeration.
+  /// </remarks>
+  /// <param name="request">The account email.</param>
+  /// <param name="cancellationToken">Cancellation token for the request.</param>
+  [HttpPost("magic-link/send")]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+  public async Task<IActionResult> SendMagicLink(
+      [FromBody] CreateLoginViaMagicLinkTokenRequestDto request,
+      CancellationToken cancellationToken)
+  {
+      await _sender.Send(new SendMagicLinkCommand(request), cancellationToken);
+      return Ok(ApiResponse<object>.SuccessResponse(
+          "If an account with that email exists, a sign-in link has been sent.", 200));
+  }
+
+  /// <summary>
+  /// Resends a new passwordless sign-in link, invalidating the previous one.
+  /// </summary>
+  /// <param name="request">The account email.</param>
+  /// <param name="cancellationToken">Cancellation token for the request.</param>
+  [HttpPost("magic-link/resend")]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+  public async Task<IActionResult> ResendMagicLink(
+      [FromBody] CreateResendMagicLinkTokenRequestDto request,
+      CancellationToken cancellationToken)
+  {
+      await _sender.Send(new ResendMagicLinkCommand(request), cancellationToken);
+      return Ok(ApiResponse<object>.SuccessResponse(
+          "If an account with that email exists, a new sign-in link has been sent.", 200));
+  }
+
+  /// <summary>
+  /// Verifies a magic-link token and logs the user in, issuing session cookies.
+  /// </summary>
+  /// <remarks>
+  /// The token is single-use — it is cleared immediately after a successful verification.
+  /// </remarks>
+  /// <param name="request">The token from the magic-link email.</param>
+  /// <param name="cancellationToken">Cancellation token for the request.</param>
+  [HttpPost("magic-link/verify")]
+  [ProducesResponseType(typeof(ApiResponse<CreateUserLoginResponseDto>), StatusCodes.Status200OK)]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+  public async Task<IActionResult> VerifyMagicLink(
+      [FromBody] CreateVerifyMagicLinkTokenRequestDto request,
+      CancellationToken cancellationToken)
+  {
+      var result = await _sender.Send(new VerifyMagicLinkCommand(request), cancellationToken);
+
+      SetAuthCookies(result);
+
+      return Ok(ApiResponse<CreateUserLoginResponseDto>.SuccessResponse(
+          result.User, "Signed in successfully.", 200));
   }
 
   private Guid GetCurrentUserId()
