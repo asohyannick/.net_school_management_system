@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DotNetEnv;
 using FluentValidation;
-using learning_ms.Web.Application.Exceptions.InternalServerError;
+using learning_ms.Web.Application.Interface.IPasswordHasher;
 using learning_ms.Web.Application.Interface.IUserRepository;
 using learning_ms.Web.Application.Mappings.AccommodationMapper;
 using learning_ms.Web.Application.Mappings.AdmissionMapper;
@@ -28,8 +28,8 @@ using learning_ms.Web.Application.Mappings.TimeTableMapper;
 using learning_ms.Web.Application.Mappings.TutorProfileMapper;
 using learning_ms.Web.Application.Mappings.UserMapper;
 using learning_ms.Web.Application.Validators.Admissions;
-using learning_ms.Web.Domain.Entities.User;
 using learning_ms.Web.Infrastructure.ApiResponse;
+using learning_ms.Web.Infrastructure.Auth.BcryptPasswordHasher;
 using learning_ms.Web.Infrastructure.Auth.FirebaseServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.Auth.JwtServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
@@ -46,7 +46,6 @@ using learning_ms.Web.Infrastructure.RateLimiting.RateLimitingServiceCollectionE
 using learning_ms.Web.Presentation.ConfigurationExtensions.CorsServiceExtensions;
 using learning_ms.Web.Presentation.Filters.TagDescriptionsDocumentFilter;
 using learning_ms.Web.Presentation.Middleware.MiddlewareExtensions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +96,7 @@ try
       options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
       options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
       options.JsonSerializerOptions.WriteIndented = false;
+      options.JsonSerializerOptions.Converters.Add(new UserRoleJsonConverter());
       options.JsonSerializerOptions.Converters.Add(
         new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
       );
@@ -126,6 +126,7 @@ try
     options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     options.SerializerOptions.PropertyNameCaseInsensitive = true;
     options.SerializerOptions.WriteIndented = false;
+    options.SerializerOptions.Converters.Add(new UserRoleJsonConverter());
     options.SerializerOptions.Converters.Add(
       new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
     );
@@ -275,8 +276,8 @@ try
 
   // ─── Auth / Identity ───────────────────────────────────────────────────────
   builder.Services.AddScoped<IUserRepository, UserRepository>();
-  builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
-
+  builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
+  
   // ─── Application services (Mapping + Validation) ─────────────────────────
   builder.Services.AddValidatorsFromAssemblyContaining<CreateAdmissionRequestDtoValidator>();
   builder.Services.AddFluentValidationAutoValidation();
@@ -353,7 +354,6 @@ try
     catch (Exception ex)
     {
       logger.LogError(ex, "❌ PostgreSQL connection failed — check your .env credentials");
-      throw new InternalServerErrorException("❌ PostgreSQL connection failed — check your .env credentials", ex);
     } 
     finally 
     {
@@ -365,7 +365,7 @@ try
   using (var seedScope = app.Services.CreateScope())
   {
     var db = seedScope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var passwordHasher = seedScope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
+    var passwordHasher = seedScope.ServiceProvider.GetRequiredService<IPasswordHasher>();
     var settingsOptions = seedScope.ServiceProvider.GetRequiredService<IOptions<RoleSeedSettingsExtensions>>();
     var logger = seedScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     await RoleAccountSeeder.SeedAsync(
@@ -433,7 +433,6 @@ try
 catch (Exception ex) when (ex is not HostAbortedException)
 {
   Log.Fatal(ex, "❌ Application terminated unexpectedly during startup");
-  throw new InternalServerErrorException("❌Application terminated unexpectedly during startup", ex);
 }
 finally
 {

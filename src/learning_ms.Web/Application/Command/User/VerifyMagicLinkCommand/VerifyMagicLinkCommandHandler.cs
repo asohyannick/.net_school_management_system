@@ -3,7 +3,6 @@ using learning_ms.Web.Application.Common.DTOs.User;
 using learning_ms.Web.Application.Exceptions.BadRequestException;
 using learning_ms.Web.Application.Interface.ITokenService;
 using learning_ms.Web.Application.Interface.IUserRepository;
-
 namespace learning_ms.Web.Application.Command.User.VerifyMagicLinkCommand;
 using Mediator;
 
@@ -47,7 +46,7 @@ public class VerifyMagicLinkCommandHandler : IRequestHandler<VerifyMagicLinkComm
 
         var accessTokenResult = _tokenService.GenerateAccessToken(
             user.Id, user.Email, user.FirstName, user.LastName, user.Role);
-        var refreshTokenResult = _tokenService.GenerateRefreshToken();
+        var refreshTokenResult = _tokenService.GenerateRefreshToken(user.Id);
 
         user.AccessToken = accessTokenResult.Token;
         user.RefreshToken = refreshTokenResult.Token;

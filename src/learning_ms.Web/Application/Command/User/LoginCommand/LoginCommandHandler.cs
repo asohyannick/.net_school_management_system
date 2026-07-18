@@ -1,12 +1,13 @@
 ﻿using learning_ms.Web.Application.Common.DTOs.User;
 using learning_ms.Web.Application.Exceptions.BadRequestException;
 using learning_ms.Web.Application.Exceptions.ForbiddenAccessException;
+using learning_ms.Web.Application.Exceptions.InternalServerError;
 using learning_ms.Web.Application.Interface.IEmailService;
+using learning_ms.Web.Application.Interface.IPasswordHasher;
 using learning_ms.Web.Application.Interface.ITokenService;
 using learning_ms.Web.Application.Interface.IUserRepository;
 namespace learning_ms.Web.Application.Command.User.LoginCommand;
 using Mediator;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
@@ -14,14 +15,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
     private const int MaxFailedLoginAttempts = 5;
 
     private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher<Domain.Entities.User.User> _passwordHasher;
+    private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
     private readonly ILogger<LoginCommandHandler> _logger;
 
     public LoginCommandHandler(
         IUserRepository userRepository,
-        IPasswordHasher<Domain.Entities.User.User> passwordHasher,
+        IPasswordHasher passwordHasher,
         ITokenService tokenService,
         IEmailService emailService,
         ILogger<LoginCommandHandler> logger)
@@ -45,9 +46,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
             throw new ForbiddenAccessException("This account has been blocked. Please contact support.");
         }
 
-        var verifyResult = _passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
+        var isPasswordValid = _passwordHasher.VerifyPassword(dto.Password, user.Password);
 
-        if (verifyResult == PasswordVerificationResult.Failed)
+        if (!isPasswordValid)
         {
             user.FailedLoginAttempts += 1;
 
@@ -67,6 +68,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to send account-blocked email to {Email}.", user.Email);
+                    throw new InternalServerErrorException("Failed to sent account-blocked email to {Email}. ", ex);
                 }
 
                 throw new ForbiddenAccessException(
@@ -85,16 +87,21 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
             throw new BadRequestException("Please verify your email before logging in.");
         }
 
-        if (verifyResult == PasswordVerificationResult.SuccessRehashNeeded)
+        if (_passwordHasher.NeedsRehash(user.Password))
         {
-            user.Password = _passwordHasher.HashPassword(user, dto.Password);
+            user.Password = _passwordHasher.HashPassword(dto.Password);
         }
 
         user.FailedLoginAttempts = 0;
 
         var accessTokenResult = _tokenService.GenerateAccessToken(
-            user.Id, user.Email, user.FirstName, user.LastName, user.Role);
-        var refreshTokenResult = _tokenService.GenerateRefreshToken();
+            user.Id, 
+            user.Email, 
+            user.FirstName, 
+            user.LastName, 
+            user.Role
+            );
+        var refreshTokenResult = _tokenService.GenerateRefreshToken(user.Id);
 
         user.AccessToken = accessTokenResult.Token;
         user.RefreshToken = refreshTokenResult.Token;

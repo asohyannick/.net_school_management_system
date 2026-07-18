@@ -1,24 +1,26 @@
-﻿using learning_ms.Web.Application.Command.User;
+﻿using System.Security.Cryptography;
+using learning_ms.Web.Application.Command.User;
 using learning_ms.Web.Application.Exceptions.BadRequestException;
 using learning_ms.Web.Application.Exceptions.InternalServerError;
 using learning_ms.Web.Application.Interface.IEmailService;
+using learning_ms.Web.Application.Interface.IPasswordHasher;
 using learning_ms.Web.Application.Interface.IUserRepository;
 using learning_ms.Web.Domain.Entities.User;
 using learning_ms.Web.Domain.Enums.UserRole;
 using Mediator;
-using Microsoft.AspNetCore.Identity;
+
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResult>
 {
     private const int OtpExpiryMinutes = 10;
 
     private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IPasswordHasher _passwordHasher;
     private readonly IEmailService _emailService;
     private readonly ILogger<RegisterUserCommandHandler> _logger;
 
     public RegisterUserCommandHandler(
         IUserRepository userRepository,
-        IPasswordHasher<User> passwordHasher,
+        IPasswordHasher passwordHasher,
         IEmailService emailService,
         ILogger<RegisterUserCommandHandler> logger)
     {
@@ -44,10 +46,10 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             LastName = dto.LastName,
             Email = dto.Email,
             Role = UserRole.Student,
-            IsActive = false, 
+            IsActive = false,
         };
 
-        user.Password = _passwordHasher.HashPassword(user, dto.Password);
+        user.Password = _passwordHasher.HashPassword(dto.Password);
 
         var otp = GenerateOtp();
         user.OTPCode = otp;
@@ -67,9 +69,8 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             throw new InternalServerErrorException("Failed to send OTP email.", ex);
         }
 
-        return new RegisterUserResult(user.Id, user.Email);
+        return new RegisterUserResult(user.Id, user.FirstName, user.LastName, user.Email, UserRole.Student);
     }
 
-    private static string GenerateOtp() => 
-      System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
+    private static string GenerateOtp() => RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
 }

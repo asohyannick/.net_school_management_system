@@ -3,7 +3,6 @@ using learning_ms.Web.Application.Exceptions.InternalServerError;
 using learning_ms.Web.Application.Interface.IEmailService;
 using learning_ms.Web.Application.Interface.IUserRepository;
 using Mediator;
-
 public class VerifyOtpCommandHandler : IRequestHandler<VerifyOtpCommand, VerifyOtpResult>
 {
     private readonly IUserRepository _userRepository;

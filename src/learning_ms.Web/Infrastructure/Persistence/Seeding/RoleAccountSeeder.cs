@@ -1,15 +1,15 @@
-﻿using learning_ms.Web.Domain.Entities.User;
+﻿using learning_ms.Web.Application.Interface.IPasswordHasher;
+using learning_ms.Web.Domain.Entities.User;
 using learning_ms.Web.Domain.Enums.UserRole;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions.RoleSeedSettingsExtensions;
 namespace learning_ms.Web.Infrastructure.Persistence.Seeding;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 public static class RoleAccountSeeder
 {
     public static async Task SeedAsync(
         AppDbContext dbContext,
-        IPasswordHasher<User> passwordHasher,
+        IPasswordHasher passwordHasher,
         IOptions<RoleSeedSettingsExtensions> settingsOptions,
         ILogger logger,
         CancellationToken cancellationToken = default)
@@ -100,9 +100,7 @@ public static class RoleAccountSeeder
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };
-
-            user.Password = passwordHasher.HashPassword(user, password);
-
+            user.Password = passwordHasher.HashPassword(password);
             dbContext.Users.Add(user);
             seededCount++;
         }

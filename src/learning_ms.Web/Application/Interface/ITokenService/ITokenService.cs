@@ -11,8 +11,12 @@ public interface ITokenService
     UserRole role,
     IEnumerable<Claim>? additionalClaims = null
   );
-  RefreshTokenResult GenerateRefreshToken();
+
+  RefreshTokenResult GenerateRefreshToken(Guid userId);
+
   ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+
+  ClaimsPrincipal? ValidateRefreshToken(string token);
 }
 
 public record AccessTokenResult(string Token, DateTime ExpiresAtUtc);

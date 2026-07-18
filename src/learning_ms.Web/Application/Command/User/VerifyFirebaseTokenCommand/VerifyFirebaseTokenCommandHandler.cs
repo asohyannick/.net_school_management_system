@@ -89,7 +89,7 @@ public class VerifyFirebaseTokenCommandHandler
 
         var accessTokenResult = _tokenService.GenerateAccessToken(
             user.Id, user.Email, user.FirstName, user.LastName, user.Role);
-        var refreshTokenResult = _tokenService.GenerateRefreshToken();
+        var refreshTokenResult = _tokenService.GenerateRefreshToken(user.Id);
 
         user.AccessToken = accessTokenResult.Token;
         user.RefreshToken = refreshTokenResult.Token;

@@ -29,7 +29,7 @@ public class FirebaseAuthService : IFirebaseAuthService
 
     string? providerId = null;
     if (claims.TryGetValue("firebase", out var firebaseClaim) &&
-        firebaseClaim is System.Collections.Generic.IDictionary<string, object> firebaseDict &&
+        firebaseClaim is IDictionary<string, object> firebaseDict &&
         firebaseDict.TryGetValue("sign_in_provider", out var providerValue))
     {
       providerId = providerValue?.ToString();

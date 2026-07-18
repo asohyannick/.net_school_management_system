@@ -15,13 +15,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     builder.HasIndex(u => u.Email).IsUnique();
 
     builder.Property(u => u.Password).IsRequired();
-    builder.Property(u => u.Role).HasConversion<string>().HasMaxLength(50);
+    builder.Property(u => u.Role)
+      .HasConversion<UserRoleUpperSnakeCaseConverter.UserRoleUpperSnakeCaseConverter>()
+      .HasMaxLength(50);
     builder.Property(u => u.ForgotPassword).HasMaxLength(512);
-    
+
     builder.Property(u => u.OTPCode).HasMaxLength(6);
     builder.Property(u => u.ResendOTPCode).HasMaxLength(6);
 
-    builder.Property(u => u.RefreshToken).HasMaxLength(512);
+    builder.Property(u => u.RefreshToken).HasMaxLength(2048);
     builder.Property(u => u.AccessToken).HasMaxLength(2048);
   }
 }

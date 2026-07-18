@@ -1,17 +1,15 @@
 ﻿using learning_ms.Web.Application.Exceptions.NotFoundException;
+using learning_ms.Web.Application.Interface.IPasswordHasher;
 using learning_ms.Web.Application.Interface.IUserRepository;
 namespace learning_ms.Web.Application.Command.User.ResetPasswordCommand;
-
 using Mediator;
-using Microsoft.AspNetCore.Identity;
-
 public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, Unit>
 {
   private readonly IUserRepository _userRepository;
-  private readonly IPasswordHasher<Domain.Entities.User.User> _passwordHasher;
+  private readonly IPasswordHasher _passwordHasher;
 
   public ResetPasswordCommandHandler(
-    IUserRepository userRepository, IPasswordHasher<Domain.Entities.User.User> passwordHasher)
+    IUserRepository userRepository, IPasswordHasher passwordHasher)
   {
     _userRepository = userRepository;
     _passwordHasher = passwordHasher;
@@ -24,7 +22,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
     var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken)
                ?? throw new NotFoundException("User not found.");
 
-    user.Password = _passwordHasher.HashPassword(user, dto.NewPassword);
+    user.Password = _passwordHasher.HashPassword(dto.NewPassword);
     user.ForgotPassword = string.Empty;
     user.ForgotPasswordExpirationDate = DateTime.UtcNow;
 
