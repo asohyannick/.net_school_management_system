@@ -30,6 +30,7 @@ using learning_ms.Web.Application.Mappings.UserMapper;
 using learning_ms.Web.Application.Validators.Admissions;
 using learning_ms.Web.Domain.Entities.User;
 using learning_ms.Web.Infrastructure.ApiResponse;
+using learning_ms.Web.Infrastructure.Auth.FirebaseServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.Auth.JwtServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.BackgroundJobs;
 using learning_ms.Web.Infrastructure.ConfigurationExtensions.ConfigurationExtensions;
@@ -42,7 +43,7 @@ using learning_ms.Web.Infrastructure.Persistence.Conventions;
 using learning_ms.Web.Infrastructure.Persistence.Repositories.UserRepository;
 using learning_ms.Web.Infrastructure.Persistence.Seeding;
 using learning_ms.Web.Infrastructure.RateLimiting.RateLimitingServiceCollectionExtensions;
-using learning_ms.Web.Presentation.Extensions.CorsServiceExtensions;
+using learning_ms.Web.Presentation.ConfigurationExtensions.CorsServiceExtensions;
 using learning_ms.Web.Presentation.Filters.TagDescriptionsDocumentFilter;
 using learning_ms.Web.Presentation.Middleware.MiddlewareExtensions;
 using Microsoft.AspNetCore.Identity;
@@ -264,6 +265,7 @@ try
   builder.Services.AddMinioStorage(builder.Configuration);
   builder.Services.AddHangfireBackgroundJobs(builder.Configuration);
   builder.Services.AddJwtAuthentication(builder.Configuration);
+  builder.Services.AddFirebaseAuthentication(builder.Configuration);
 
   // ─── Mediator (source-generator based, not MediatR) ──────────────────────
   builder.Services.AddMediator(options =>

@@ -10,6 +10,7 @@ using learning_ms.Web.Application.Command.User.ResendOtpCommand;
 using learning_ms.Web.Application.Command.User.ResetPasswordCommand;
 using learning_ms.Web.Application.Command.User.SendMagicLinkCommand;
 using learning_ms.Web.Application.Command.User.UnBlockUserCommand;
+using learning_ms.Web.Application.Command.User.VerifyFirebaseTokenCommand;
 using learning_ms.Web.Application.Command.User.VerifyMagicLinkCommand;
 using learning_ms.Web.Application.Common.DTOs.User;
 using learning_ms.Web.Application.Exceptions.BadRequestException;
@@ -342,6 +343,32 @@ public class AuthController : ControllerBase
 
       return Ok(ApiResponse<CreateUserLoginResponseDto>.SuccessResponse(
           result.User, "Signed in successfully.", 200));
+  }
+  
+  /// <summary>
+  /// Signs a user in using a Firebase ID token (Google, phone, or other Firebase providers).
+  /// </summary>
+  /// <remarks>
+  /// Verifies the token server-side via the Firebase Admin SDK. If no account exists for
+  /// this Firebase identity, one is created automatically with the <c>Student</c> role.
+  /// If Firebase reports the email as verified, the account is activated immediately,
+  /// bypassing OTP verification. Issues the same session cookies as a normal login.
+  /// </remarks>
+  /// <param name="request">The Firebase ID token obtained from the client SDK.</param>
+  /// <param name="cancellationToken">Cancellation token for the request.</param>
+  [HttpPost("firebase/verify")]
+  [ProducesResponseType(typeof(ApiResponse<CreateUserLoginResponseDto>), StatusCodes.Status200OK)]
+  [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+  public async Task<IActionResult> VerifyFirebaseToken(
+      [FromBody] CreateVerifyFirebaseTokenRequestDto request,
+      CancellationToken cancellationToken)
+  {
+      var result = await _sender.Send(new VerifyFirebaseTokenCommand(request), cancellationToken);
+  
+      SetAuthCookies(result);
+  
+      return Ok(ApiResponse<CreateUserLoginResponseDto>.SuccessResponse(
+          result.User, "Signed in successfully via Firebase."));
   }
 
   private Guid GetCurrentUserId()

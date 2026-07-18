@@ -42,5 +42,6 @@ public class UserRepository : IUserRepository
   
   public Task<User?> GetByMagicLinkTokenAsync(string token, CancellationToken cancellationToken = default) =>
     _context.Users.FirstOrDefaultAsync(u => u.MagicLinkToken == token, cancellationToken);
-  
+  public Task<User?> GetByFirebaseUidAsync(string firebaseUid, CancellationToken cancellationToken = default) =>
+    _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid, cancellationToken);
 }

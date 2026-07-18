@@ -1,6 +1,6 @@
 ﻿using learning_ms.Web.Application.Common.Settings.CorsSettings;
 using learning_ms.Web.Application.Exceptions.NotFoundException;
-namespace learning_ms.Web.Presentation.Extensions.CorsServiceExtensions;
+namespace learning_ms.Web.Presentation.ConfigurationExtensions.CorsServiceExtensions;
 public static class CorsServiceExtensions
 {
   public static IServiceCollection AddCorsPolicies(

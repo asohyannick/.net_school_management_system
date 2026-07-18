@@ -12,4 +12,5 @@ public interface IUserRepository
     Task<(List<User> Items, int TotalCount)> GetPagedAsync(int page, int perPage, CancellationToken cancellationToken = default);
     void Remove(User user);
     Task<User?> GetByMagicLinkTokenAsync(string token, CancellationToken cancellationToken = default);
+    Task<User?> GetByFirebaseUidAsync(string firebaseUid, CancellationToken cancellationToken = default);
 }
