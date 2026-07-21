@@ -15,7 +15,7 @@ public class TagDescriptionsDocumentFilter : IDocumentFilter
       new ()
       {
         Name = "Student Profile Management",
-        Description = "Handles creation, retrieval, updating, and management of student profile information."
+        Description = "Manages student profile records, including profile picture uploads processed asynchronously in the background via Hangfire and stored in MinIO."
       }
     };
   }

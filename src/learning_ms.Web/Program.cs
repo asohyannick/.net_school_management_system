@@ -1,9 +1,11 @@
-﻿using System.IO.Compression;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DotNetEnv;
 using FluentValidation;
 using learning_ms.Web.Application.Interface.IPasswordHasher;
+using learning_ms.Web.Application.Interface.IStudentProfileRepository;
 using learning_ms.Web.Application.Interface.IUserRepository;
 using learning_ms.Web.Application.Mappings.AccommodationMapper;
 using learning_ms.Web.Application.Mappings.AdmissionMapper;
@@ -40,13 +42,13 @@ using learning_ms.Web.Infrastructure.FileStorage.MinioServiceExtensions;
 using learning_ms.Web.Infrastructure.Payments.PayPal.PayPalServiceCollectionExtensions;
 using learning_ms.Web.Infrastructure.Persistence;
 using learning_ms.Web.Infrastructure.Persistence.Conventions;
+using learning_ms.Web.Infrastructure.Persistence.Repositories.StudentProfileRepository;
 using learning_ms.Web.Infrastructure.Persistence.Repositories.UserRepository;
 using learning_ms.Web.Infrastructure.Persistence.Seeding;
 using learning_ms.Web.Infrastructure.RateLimiting.RateLimitingServiceCollectionExtensions;
 using learning_ms.Web.Presentation.ConfigurationExtensions.CorsServiceExtensions;
 using learning_ms.Web.Presentation.Filters.TagDescriptionsDocumentFilter;
 using learning_ms.Web.Presentation.Middleware.MiddlewareExtensions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -197,7 +199,7 @@ try
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
     {
-      c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+      c.IncludeXmlComments(xmlPath, includeControllerXmlComments: false);
     }
   });
 
@@ -277,6 +279,7 @@ try
 
   // ─── Auth / Identity ───────────────────────────────────────────────────────
   builder.Services.AddScoped<IUserRepository, UserRepository>();
+  builder.Services.AddScoped<IStudentProfileRepository, StudentProfileRepository>();
   builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
   
   // ─── Application services (Mapping + Validation) ─────────────────────────

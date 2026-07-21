@@ -28,13 +28,14 @@ internal sealed class FileProcessingService : IFileProcessingService
   public async Task<string> EnqueueUploadAsync(
       IFormFile file,
       string folder,
+      Guid? studentProfileId = null,
       CancellationToken cancellationToken = default)
   {
     await _fileValidator.ValidateAsync(file, cancellationToken);
 
     var tempPath = await BufferToTempFileAsync(file, cancellationToken);
 
-    var payload = BuildPayload(file, folder, tempPath);
+    var payload = BuildPayload(file, folder, tempPath, studentProfileId);
 
     var jobId = _jobClient.Enqueue<IFileUploadJob>(
         job => job.ProcessAndUploadAsync(payload, CancellationToken.None));
@@ -45,16 +46,18 @@ internal sealed class FileProcessingService : IFileProcessingService
 
     return jobId;
   }
+
   public async Task<string> ScheduleUploadAsync(
       IFormFile file,
       string folder,
       TimeSpan delay,
+      Guid? studentProfileId = null,
       CancellationToken cancellationToken = default)
   {
     await _fileValidator.ValidateAsync(file, cancellationToken);
 
     var tempPath = await BufferToTempFileAsync(file, cancellationToken);
-    var payload = BuildPayload(file, folder, tempPath);
+    var payload = BuildPayload(file, folder, tempPath, studentProfileId);
 
     var jobId = _jobClient.Schedule<IFileUploadJob>(
         job => job.ProcessAndUploadAsync(payload, CancellationToken.None),
@@ -66,6 +69,7 @@ internal sealed class FileProcessingService : IFileProcessingService
 
     return jobId;
   }
+
   private static async Task<string> BufferToTempFileAsync(
       IFormFile file,
       CancellationToken ct)
@@ -86,7 +90,8 @@ internal sealed class FileProcessingService : IFileProcessingService
   private static FileUploadJobPayload BuildPayload(
       IFormFile file,
       string folder,
-      string tempPath) => new()
+      string tempPath,
+      Guid? studentProfileId) => new()
       {
         TempFilePath = tempPath,
         OriginalFileName = file.FileName,
@@ -94,5 +99,6 @@ internal sealed class FileProcessingService : IFileProcessingService
         FileSizeBytes = file.Length,
         Folder = folder,
         EnqueuedAtUtc = DateTime.UtcNow,
+        StudentProfileId = studentProfileId,
       };
 }

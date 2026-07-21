@@ -7,4 +7,6 @@ public sealed class FileUploadJobPayload
   public long FileSizeBytes { get; init; } = long.MinValue;
   public string Folder { get; init; } = string.Empty;
   public DateTime EnqueuedAtUtc { get; init; } = DateTime.UtcNow;
+  
+  public Guid? StudentProfileId { get; init; }
 }

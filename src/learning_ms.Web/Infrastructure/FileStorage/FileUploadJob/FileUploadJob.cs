@@ -1,9 +1,11 @@
 ﻿using Hangfire;
-using learning_ms.Web.Application.Common.DTOs.FileUploadResult;
 using learning_ms.Web.Application.Common.DTOs.FileUploadResult.FileUploadJobPayload;
+using learning_ms.Web.Application.Common.DTOs.FileUploadResult;
 using learning_ms.Web.Application.Common.Settings.FileUploadSettings;
 using learning_ms.Web.Application.Common.Settings.MinioSettings;
+using learning_ms.Web.Application.Interface.IEmailService;
 using learning_ms.Web.Application.Interface.IFileUploadJob;
+using learning_ms.Web.Application.Interface.IStudentProfileRepository;
 using learning_ms.Web.Domain.Exceptions.FileValidationException;
 using learning_ms.Web.Infrastructure.FileStorage.FileValidator;
 using Minio;
@@ -16,17 +18,26 @@ public sealed class FileUploadJob : IFileUploadJob
   private readonly IMinioClient _minioClient;
   private readonly MinioSettings _minioSettings;
   private readonly FileValidator _fileValidator;
+  private readonly IStudentProfileRepository _studentProfileRepository;
+  private readonly IEmailService _emailService;
+  private readonly IConfiguration _configuration;
   private readonly ILogger<FileUploadJob> _logger;
 
   public FileUploadJob(
       IMinioClient minioClient,
       MinioSettings minioSettings,
       FileUploadSettings fileUploadSettings,
+      IStudentProfileRepository studentProfileRepository,
+      IEmailService emailService,
+      IConfiguration configuration,
       ILogger<FileUploadJob> logger)
   {
     _minioClient = minioClient;
     _minioSettings = minioSettings;
     _fileValidator = new FileValidator(fileUploadSettings);
+    _studentProfileRepository = studentProfileRepository;
+    _emailService = emailService;
+    _configuration = configuration;
     _logger = logger;
   }
 
@@ -54,10 +65,55 @@ public sealed class FileUploadJob : IFileUploadJob
       _logger.LogInformation(
           "[FileUploadJob] Completed — Object: {ObjectName} | URL: {Url} | Size: {Bytes} bytes",
           result.ObjectName, result.Url, result.FileSizeBytes);
+
+      if (payload.StudentProfileId.HasValue)
+      {
+        await HandleStudentProfileImageCompletionAsync(
+            payload.StudentProfileId.Value, result.Url, cancellationToken);
+      }
     }
     finally
     {
       CleanupTempFiles(payload.TempFilePath);
+    }
+  }
+
+  private async Task HandleStudentProfileImageCompletionAsync(
+      Guid studentProfileId, string imageUrl, CancellationToken ct)
+  {
+    var remaining = await _studentProfileRepository.AppendImageUrlAndDecrementPendingAsync(
+        studentProfileId, imageUrl, ct);
+
+    _logger.LogInformation(
+        "[FileUploadJob] Recorded image for StudentProfile {Id} — {Remaining} image(s) still pending.",
+        studentProfileId, remaining);
+
+    if (remaining != 0)
+    {
+      return; 
+    }
+
+    var profile = await _studentProfileRepository.GetByIdAsync(studentProfileId, ct);
+    if (profile is null || string.IsNullOrWhiteSpace(profile.Email))
+    {
+      _logger.LogWarning(
+          "[FileUploadJob] Could not send activation email for StudentProfile {Id} — profile or email missing.",
+          studentProfileId);
+      return;
+    }
+
+    var frontendBaseUrl = _configuration["FrontendSettings:BaseUrl"] ?? "http://localhost:3000";
+    var activationUrl = $"{frontendBaseUrl.TrimEnd('/')}/activate?studentProfileId={profile.Id}";
+
+    try
+    {
+      await _emailService.SendAccountActivationEmailAsync(
+          profile.Email, profile.FirstName, activationUrl, ct);
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex,
+          "[FileUploadJob] Failed to send activation email for StudentProfile {Id}.", studentProfileId);
     }
   }
 
@@ -112,10 +168,10 @@ public sealed class FileUploadJob : IFileUploadJob
     _logger.LogInformation(
         "[FileUploadJob] Processing image: {FileName}", payload.OriginalFileName);
 
-
     await Task.CompletedTask;
     return payload.TempFilePath;
   }
+
   private async Task<string> ProcessDocumentAsync(
       FileUploadJobPayload payload,
       CancellationToken ct)
@@ -126,6 +182,7 @@ public sealed class FileUploadJob : IFileUploadJob
     await Task.CompletedTask;
     return payload.TempFilePath;
   }
+
   private async Task<string> ProcessVideoAsync(
       FileUploadJobPayload payload,
       CancellationToken ct)
@@ -175,6 +232,7 @@ public sealed class FileUploadJob : IFileUploadJob
         ContentType: payload.ContentType,
         FileSizeBytes: fileSize);
   }
+
   private void CleanupTempFiles(string tempFilePath)
   {
     try
@@ -210,6 +268,7 @@ public sealed class FileUploadJob : IFileUploadJob
     }
   }
 }
+
 internal sealed class TempFormFile : IFormFile
 {
   private readonly Stream _stream;

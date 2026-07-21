@@ -22,10 +22,14 @@ public partial class StudentProfileMapper
   [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.CreatedBy))]
   [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.UpdatedBy))]
   [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.ProfilePictureImages))]
+  [MapperIgnoreTarget(nameof(StudentProfile.UserId))]
+  [MapperIgnoreTarget(nameof(StudentProfile.PendingImageCount))]
   public partial StudentProfile ToEntity(CreateStudentProfileRequestDto dto);
 
   [MapperIgnoreSource(nameof(StudentProfile.UpdatedAt))]
   [MapperIgnoreSource(nameof(StudentProfile.CreatedBy))]
   [MapperIgnoreSource(nameof(StudentProfile.UpdatedBy))]
+  [MapperIgnoreSource(nameof(StudentProfile.UserId))]
+  [MapperIgnoreSource(nameof(StudentProfile.PendingImageCount))]
   public partial CreateStudentProfileResponseDto ToResponseDto(StudentProfile entity);
 }

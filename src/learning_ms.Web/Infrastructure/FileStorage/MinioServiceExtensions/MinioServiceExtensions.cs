@@ -26,8 +26,8 @@ public static class MinioServiceExtensions
     }
 
     var endpoint = section["Endpoint"];
-    var accessKey = section["AccessKey"];
-    var secretKey = section["SecretKey"];
+    var minioUsername = section["Minio_username"];
+    var minioPassword = section["Minio_password"];
     var bucketName = section["BucketName"];
     var region = section["Region"];
     var useSslRaw = section["UseSSL"];
@@ -40,15 +40,15 @@ public static class MinioServiceExtensions
 
     var hasUnresolvedValue =
       IsUnresolved(endpoint)
-      || IsUnresolved(accessKey)
-      || IsUnresolved(secretKey)
+      || IsUnresolved(minioUsername)
+      || IsUnresolved(minioPassword)
       || IsUnresolved(bucketName);
 
     var minioSettings = new MinioSettings
     {
       Endpoint = IsUnresolved(endpoint) ? "localhost:9000" : endpoint!,
-      AccessKey = IsUnresolved(accessKey) ? "unresolved" : accessKey!,
-      SecretKey = IsUnresolved(secretKey) ? "unresolved" : secretKey!,
+      AccessKey = IsUnresolved(minioUsername) ? "unresolved" : minioUsername!,
+      SecretKey = IsUnresolved(minioPassword) ? "unresolved" : minioPassword!,
       BucketName = IsUnresolved(bucketName) ? "unresolved" : bucketName!,
       Region = string.IsNullOrWhiteSpace(region) || IsUnresolved(region) ? "us-east-1" : region,
       UseSSL = useSsl,
@@ -105,7 +105,7 @@ public static class MinioServiceExtensions
     {
       logger.LogWarning(
         "MinioSettings:Endpoint/AccessKey/SecretKey/BucketName contains an unresolved \"${{VAR}}\" placeholder. "
-          + "File storage will fail until MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, and MINIO_BUCKET_NAME are set in your environment."
+          + "File storage will fail until MINIO_ENDPOINT, MINIO_USERNAME, MINIO_PASSWORD and MINIO_BUCKET_NAME are set in your environment."
       );
     }
 

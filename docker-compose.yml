@@ -5,16 +5,36 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - learning_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    container_name: learning_ms_minio
+    env_file:
+      - .env
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USERNAME}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+    command: server /data --console-address ":9001"
+    ports:
+      - "${MINIO_PORT:-9020}:9000"
+      - "${MINIO_CONSOLE_PORT:-9021}:9001"
+    volumes:
+      - learning_minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,14 +48,23 @@ services:
     env_file:
       - .env
     environment:
-      ASPNETCORE_URLS: ${ASPNETCORE_URLS}
+      ASPNETCORE_URLS: "http://+:8000"
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${DATABASE_NAME};Username=${DATABASE_USER};Password=${DATABASE_PASSWORD}"
+      MinioSettings__Endpoint: "minio:9000"
+      MinioSettings__AccessKey: ${MINIO_USERNAME}
+      MinioSettings__SecretKey: ${MINIO_PASSWORD}
+      MinioSettings__BucketName: ${MINIO_BUCKET_NAME}
+      MinioSettings__UseSSL: ${MINIO_USE_SSL}
+      MinioSettings__Region: ${MINIO_REGION}
     ports:
-      - "${API_PORT}:8080"
+      - "${API_PORT:-8000}:8000"
     depends_on:
       postgres:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     restart: unless-stopped
 
 volumes:
   learning_postgres_data:
+  learning_minio_data:

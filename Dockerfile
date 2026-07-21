@@ -7,12 +7,10 @@ COPY Directory.Packages.props .
 COPY nuget.config .
 COPY learning_ms.slnx .
 
-COPY src/learning_ms.ServiceDefaults/learning_ms.ServiceDefaults.csproj src/learning_ms.ServiceDefaults/
 COPY src/learning_ms.Web/learning_ms.Web.csproj src/learning_ms.Web/
 
 RUN dotnet restore src/learning_ms.Web/learning_ms.Web.csproj
 
-COPY src/learning_ms.ServiceDefaults/ src/learning_ms.ServiceDefaults/
 COPY src/learning_ms.Web/ src/learning_ms.Web/
 
 RUN dotnet publish src/learning_ms.Web/learning_ms.Web.csproj \
@@ -28,7 +26,7 @@ USER appuser
 
 COPY --from=build /app/publish .
 
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 8000
+EXPOSE 8001
 
 ENTRYPOINT ["dotnet", "learning_ms.Web.dll"]
