@@ -5,4 +5,5 @@ public record UpdateStudentProfileCommand(
   Guid Id,
   CreateStudentProfileRequestDto Request,
   Guid RequestingUserId,
-  bool IsSuperAdmin) : IRequest<CreateStudentProfileResponseDto>;
+  bool IsSuperAdmin
+  ) : IRequest<CreateStudentProfileResponseDto>;

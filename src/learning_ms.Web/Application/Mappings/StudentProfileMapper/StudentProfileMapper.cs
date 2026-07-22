@@ -25,6 +25,27 @@ public partial class StudentProfileMapper
   [MapperIgnoreTarget(nameof(StudentProfile.UserId))]
   [MapperIgnoreTarget(nameof(StudentProfile.PendingImageCount))]
   public partial StudentProfile ToEntity(CreateStudentProfileRequestDto dto);
+  
+  [MapperIgnoreTarget(nameof(StudentProfile.Id))]
+  [MapperIgnoreTarget(nameof(StudentProfile.ProfilePictureUrl))]
+  [MapperIgnoreTarget(nameof(StudentProfile.Age))]
+  [MapperIgnoreTarget(nameof(StudentProfile.IsActive))]
+  [MapperIgnoreTarget(nameof(StudentProfile.IsGraduated))]
+  [MapperIgnoreTarget(nameof(StudentProfile.CreatedAt))]
+  [MapperIgnoreTarget(nameof(StudentProfile.UpdatedAt))]
+  [MapperIgnoreTarget(nameof(StudentProfile.CreatedBy))]
+  [MapperIgnoreTarget(nameof(StudentProfile.UpdatedBy))]
+  [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.Id))]
+  [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.IsActive))]
+  [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.IsGraduated))]
+  [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.CreatedAt))]
+  [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.UpdatedAt))]
+  [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.CreatedBy))]
+  [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.UpdatedBy))]
+  [MapperIgnoreSource(nameof(CreateStudentProfileRequestDto.ProfilePictureImages))]
+  [MapperIgnoreTarget(nameof(StudentProfile.UserId))]
+  [MapperIgnoreTarget(nameof(StudentProfile.PendingImageCount))]
+  public partial void ToEntity(CreateStudentProfileRequestDto dto, StudentProfile entity);
 
   [MapperIgnoreSource(nameof(StudentProfile.UpdatedAt))]
   [MapperIgnoreSource(nameof(StudentProfile.CreatedBy))]

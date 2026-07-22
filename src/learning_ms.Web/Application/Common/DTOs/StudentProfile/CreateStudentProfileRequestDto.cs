@@ -1,7 +1,6 @@
 ﻿using learning_ms.Web.Domain.Enums.GenderType;
 namespace learning_ms.Web.Application.Common.DTOs.StudentProfile;
 using Microsoft.AspNetCore.Http;
-
 public record CreateStudentProfileRequestDto
 {
   public Guid? Id { get; init; } = Guid.Empty;

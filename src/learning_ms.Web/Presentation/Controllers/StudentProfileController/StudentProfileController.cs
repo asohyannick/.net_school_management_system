@@ -70,7 +70,7 @@ public class StudentProfileController : ControllerBase
         [FromQuery] int page = 1, [FromQuery] int perPage = 20, CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(new FetchStudentProfilesQuery(page, perPage), cancellationToken);
-        return Ok(ApiResponse<PagedResult<CreateStudentProfileResponseDto>>.SuccessResponse(result));
+        return Ok(ApiResponse<PagedResult<CreateStudentProfileResponseDto>>.SuccessResponse(result, "Student profiles have been fetched successfully."));
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ public class StudentProfileController : ControllerBase
     public async Task<IActionResult> Count(CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new CountStudentProfilesQuery(), cancellationToken);
-        return Ok(ApiResponse<int>.SuccessResponse(result));
+        return Ok(ApiResponse<int>.SuccessResponse(result, "Total number of student profiles have been fetched successfully"));
     }
 
     /// <summary>

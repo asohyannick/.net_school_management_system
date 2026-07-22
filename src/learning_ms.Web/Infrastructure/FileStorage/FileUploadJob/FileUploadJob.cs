@@ -40,7 +40,7 @@ public sealed class FileUploadJob : IFileUploadJob
     _configuration = configuration;
     _logger = logger;
   }
-
+  
   public async Task ProcessAndUploadAsync(
       FileUploadJobPayload payload,
       CancellationToken cancellationToken = default)
@@ -48,34 +48,28 @@ public sealed class FileUploadJob : IFileUploadJob
     _logger.LogInformation(
         "[FileUploadJob] Starting — File: {FileName} | Folder: {Folder} | Enqueued: {EnqueuedAt}",
         payload.OriginalFileName, payload.Folder, payload.EnqueuedAtUtc);
-
-    try
+  
+    if (!File.Exists(payload.TempFilePath))
+      throw new FileValidationException(
+          $"Temp file not found at '{payload.TempFilePath}'. " +
+          "It may have been deleted before the job ran.");
+  
+    await ValidateFromTempFileAsync(payload, cancellationToken);
+  
+    var processedPath = await ProcessFileAsync(payload, cancellationToken);
+  
+    var result = await UploadToMinioAsync(payload, processedPath, cancellationToken);
+  
+    _logger.LogInformation(
+        "[FileUploadJob] Completed — Object: {ObjectName} | URL: {Url} | Size: {Bytes} bytes",
+        result.ObjectName, result.Url, result.FileSizeBytes);
+  
+    if (payload.StudentProfileId.HasValue)
     {
-      if (!File.Exists(payload.TempFilePath))
-        throw new FileValidationException(
-            $"Temp file not found at '{payload.TempFilePath}'. " +
-            "It may have been deleted before the job ran.");
-
-      await ValidateFromTempFileAsync(payload, cancellationToken);
-
-      var processedPath = await ProcessFileAsync(payload, cancellationToken);
-
-      var result = await UploadToMinioAsync(payload, processedPath, cancellationToken);
-
-      _logger.LogInformation(
-          "[FileUploadJob] Completed — Object: {ObjectName} | URL: {Url} | Size: {Bytes} bytes",
-          result.ObjectName, result.Url, result.FileSizeBytes);
-
-      if (payload.StudentProfileId.HasValue)
-      {
-        await HandleStudentProfileImageCompletionAsync(
-            payload.StudentProfileId.Value, result.Url, cancellationToken);
-      }
+      await HandleStudentProfileImageCompletionAsync(
+          payload.StudentProfileId.Value, result.Url, cancellationToken);
     }
-    finally
-    {
-      CleanupTempFiles(payload.TempFilePath);
-    }
+    CleanupTempFiles(payload.TempFilePath);
   }
 
   private async Task HandleStudentProfileImageCompletionAsync(
